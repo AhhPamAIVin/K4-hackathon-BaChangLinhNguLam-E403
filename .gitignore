@@ -4,3 +4,6 @@ node_modules/
 __pycache__/
 *.py[cod]
 *.env
+__pycache__/
+data/embedding_cache.json
+quiz-output/
