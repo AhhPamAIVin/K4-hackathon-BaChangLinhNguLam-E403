@@ -13,7 +13,8 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT))
+CODEBASE_DIR = ROOT / "codebase"
+sys.path.insert(0, str(CODEBASE_DIR))
 
 from backend.app.services.guardrails import evaluate_learning_request  # noqa: E402
 

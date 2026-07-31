@@ -20,8 +20,8 @@ flowchart LR
 
 Backend chỉ sử dụng hai loại dữ liệu đã xử lý:
 
-- `backend/data/processed/embeddings`: retrieval cho hỏi đáp và ôn tập.
-- `backend/data/processed/summaries`: nguồn có cấu trúc để tạo quiz.
+- `codebase/backend/data/processed/embeddings`: retrieval cho hỏi đáp và ôn tập.
+- `codebase/backend/data/processed/summaries`: nguồn có cấu trúc để tạo quiz.
 
 Mọi request đi qua guardrail cục bộ trước khi gọi embedding hoặc model. Các
 nhóm bị chặn gồm: ngoài phạm vi học tập, prompt injection/đánh cắp prompt, xâm
@@ -143,9 +143,9 @@ flowchart LR
 
 ## File triển khai chính
 
-- `frontend/src/components/SlideReaderView.jsx`: đọc PDF và bắt selection.
-- `frontend/src/components/AiTutorPanel.jsx`: ba giao diện AI.
-- `frontend/src/services/vlearnApi.js`: giao tiếp với FastAPI.
-- `backend/app/tools/knowledge_qa.py`: hỏi đáp kiến thức.
-- `backend/app/tools/study_review.py`: ôn tập và ghi nhớ.
-- `backend/app/tools/generate_quiz.py`: tạo trắc nghiệm.
+- `codebase/frontend/src/components/SlideReaderView.jsx`: đọc PDF và bắt selection.
+- `codebase/frontend/src/components/AiTutorPanel.jsx`: ba giao diện AI.
+- `codebase/frontend/src/services/vlearnApi.js`: giao tiếp với FastAPI.
+- `codebase/backend/app/tools/knowledge_qa.py`: hỏi đáp kiến thức.
+- `codebase/backend/app/tools/study_review.py`: ôn tập và ghi nhớ.
+- `codebase/backend/app/tools/generate_quiz.py`: tạo trắc nghiệm.

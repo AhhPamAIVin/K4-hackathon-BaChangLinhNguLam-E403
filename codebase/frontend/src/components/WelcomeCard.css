@@ -1,0 +1,153 @@
+.welcome-card {
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  background-color: var(--bg-card);
+  margin-bottom: 24px;
+}
+
+.welcome-card-top-bar {
+  height: 4px;
+  background-color: var(--brand-navy);
+  width: 100%;
+}
+
+[data-theme='dark'] .welcome-card-top-bar {
+  background-color: #3b82f6;
+}
+
+.welcome-card-inner {
+  display: flex;
+  justify-content: space-between;
+  position: relative;
+  min-height: 200px;
+}
+
+.welcome-card-content {
+  padding: 32px 36px;
+  max-width: 75%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  z-index: 2;
+}
+
+.welcome-tag {
+  color: var(--brand-red);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.6px;
+  text-transform: uppercase;
+}
+
+.welcome-heading {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--brand-navy);
+  letter-spacing: -0.5px;
+}
+
+[data-theme='dark'] .welcome-heading {
+  color: #f8fafc;
+}
+
+.welcome-text {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 600px;
+}
+
+.link-inline {
+  color: var(--text-primary);
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.link-inline:hover {
+  color: var(--brand-blue);
+}
+
+.welcome-badges {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.badge-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: var(--radius-full);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.badge-active-signal {
+  background-color: #e0f2fe;
+  color: #0369a1;
+}
+
+[data-theme='dark'] .badge-active-signal {
+  background-color: rgba(14, 165, 233, 0.2);
+  color: #38bdf8;
+}
+
+.status-dot-green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+  animation: pulseGreen 2s infinite;
+}
+
+@keyframes pulseGreen {
+  0% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.5); }
+  70% { box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+}
+
+.badge-reading-progress {
+  background-color: #ffe4e6;
+  color: #be123c;
+}
+
+[data-theme='dark'] .badge-reading-progress {
+  background-color: rgba(225, 29, 72, 0.2);
+  color: #fb7185;
+}
+
+/* Slanted Red Accent Polygon */
+.welcome-card-red-accent {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 140px;
+  background-color: var(--brand-red);
+  clip-path: polygon(30% 0, 100% 0, 100% 100%, 0% 100%);
+  border-top-right-radius: 20px;
+  border-bottom-right-radius: 20px;
+  z-index: 1;
+  transition: transform 0.3s ease;
+}
+
+.welcome-card:hover .welcome-card-red-accent {
+  transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+  .welcome-card-content {
+    max-width: 100%;
+    padding: 24px;
+  }
+  .welcome-card-red-accent {
+    opacity: 0.2;
+    width: 80px;
+  }
+}
