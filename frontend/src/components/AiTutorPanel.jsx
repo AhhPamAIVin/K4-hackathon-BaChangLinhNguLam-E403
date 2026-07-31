@@ -4,6 +4,7 @@ import {
   BookOpenCheck,
   Brain,
   Check,
+  CheckCircle2,
   ChevronRight,
   HelpCircle,
   Loader2,
@@ -13,6 +14,8 @@ import {
   ShieldAlert,
   ShieldCheck,
   Sparkles,
+  Target,
+  Trophy,
   X,
 } from 'lucide-react';
 import {
@@ -42,6 +45,8 @@ function toHistory(messages) {
 }
 
 function ChatMessage({ message, onQuestionSelect }) {
+  const [expandedCitation, setExpandedCitation] = useState(null);
+
   if (message.role === 'user') {
     return (
       <div className="tutor-message user">
@@ -69,13 +74,51 @@ function ChatMessage({ message, onQuestionSelect }) {
       </div>
       <div className="tutor-message-content">{message.content}</div>
       {message.citations?.length > 0 && (
-        <div className="tutor-citations">
-          {message.citations.map((citation) => (
-            <span key={`${citation.id}-${citation.source}`} className="citation-chip">
-              {citation.id}
-            </span>
-          ))}
-        </div>
+        <>
+          <div className="tutor-citations">
+            {message.citations.map((citation) => {
+              const citationKey = `${citation.id}-${citation.source}`;
+              const isExpanded = expandedCitation === citationKey;
+              return (
+                <button
+                  key={citationKey}
+                  className={`citation-chip expandable ${isExpanded ? 'active' : ''}`}
+                  onClick={() => setExpandedCitation(isExpanded ? null : citationKey)}
+                  aria-expanded={isExpanded}
+                  title={`Xem nội dung từ ${citation.source}`}
+                >
+                  <span>{citation.id}</span>
+                  <ChevronRight size={11} />
+                </button>
+              );
+            })}
+          </div>
+          {message.citations.map((citation) => {
+            const citationKey = `${citation.id}-${citation.source}`;
+            if (expandedCitation !== citationKey) return null;
+            return (
+              <div key={`${citationKey}-preview`} className="citation-preview">
+                <div className="citation-preview-header">
+                  <BookOpenCheck size={13} />
+                  <div>
+                    <strong>{citation.id}</strong>
+                    <span>{citation.source}</span>
+                  </div>
+                  <button
+                    onClick={() => setExpandedCitation(null)}
+                    title="Đóng nội dung nguồn"
+                  >
+                    <X size={13} />
+                  </button>
+                </div>
+                <p>
+                  {citation.excerpt ||
+                    'Nguồn này chưa có nội dung xem trước. Hãy mở transcript để kiểm tra.'}
+                </p>
+              </div>
+            );
+          })}
+        </>
       )}
       {message.suggested_questions?.length > 0 && (
         <div className="assistant-followups">
@@ -117,7 +160,127 @@ function EmptyChat({ mode, onSuggestion }) {
   );
 }
 
-function QuizWorkspace() {
+function QuizCompletion({
+  quiz,
+  answers,
+  onReset,
+  onRetryWeak,
+  onReviewGaps,
+}) {
+  const correctCount = answers.filter((answer) => answer.isCorrect).length;
+  const percent = Math.round((correctCount / answers.length) * 100);
+  const wrongAnswers = answers.filter((answer) => !answer.isCorrect);
+  const masteredObjectives = [
+    ...new Set(
+      answers
+        .filter((answer) => answer.isCorrect)
+        .map((answer) => answer.question.learning_objective)
+    ),
+  ];
+  const gapMap = new Map();
+  wrongAnswers.forEach(({ question }) => {
+    const key = question.learning_objective;
+    const existing = gapMap.get(key) || {
+      objective: key,
+      explanations: [],
+      citations: new Set(),
+    };
+    existing.explanations.push(question.explanation);
+    question.citations.forEach((citation) => existing.citations.add(citation));
+    gapMap.set(key, existing);
+  });
+  const gaps = [...gapMap.values()].map((gap) => ({
+    ...gap,
+    citations: [...gap.citations],
+  }));
+  const status = percent >= 80
+    ? 'Nắm khá chắc'
+    : percent >= 60
+      ? 'Đang tiến bộ'
+      : 'Cần củng cố';
+
+  return (
+    <div className="quiz-completion">
+      <div className="completion-hero">
+        <div className={`score-ring score-${percent >= 80 ? 'high' : percent >= 60 ? 'mid' : 'low'}`}>
+          <strong>{percent}%</strong>
+          <span>{correctCount}/{answers.length} đúng</span>
+        </div>
+        <div>
+          <span className="completion-eyebrow"><Trophy size={12} /> Hoàn thành</span>
+          <h3>{status}</h3>
+          <p>{quiz.quiz_title}</p>
+        </div>
+      </div>
+
+      {gaps.length > 0 ? (
+        <section className="knowledge-gap-section">
+          <div className="completion-section-title">
+            <span><Target size={14} /></span>
+            <div>
+              <h4>Kiến thức cần củng cố</h4>
+              <p>Dựa trên {wrongAnswers.length} câu bạn trả lời chưa đúng.</p>
+            </div>
+          </div>
+          <div className="knowledge-gap-list">
+            {gaps.map((gap, index) => (
+              <article key={gap.objective} className="knowledge-gap-card">
+                <div className="gap-number">{index + 1}</div>
+                <div>
+                  <h5>{gap.objective}</h5>
+                  <p>{gap.explanations[0]}</p>
+                  <div className="tutor-citations">
+                    {gap.citations.map((citation) => (
+                      <span key={citation} className="citation-chip">{citation}</span>
+                    ))}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+          <button
+            className="review-gaps-button"
+            onClick={() => onReviewGaps(gaps.map((gap) => gap.objective))}
+          >
+            <Brain size={16} />
+            Ôn các phần còn hổng với AI
+          </button>
+        </section>
+      ) : (
+        <section className="perfect-result">
+          <CheckCircle2 size={22} />
+          <div>
+            <h4>Chưa phát hiện lỗ hổng trong lượt này</h4>
+            <p>Hãy thử bộ câu hỏi khó hơn để kiểm tra sâu hơn.</p>
+          </div>
+        </section>
+      )}
+
+      {masteredObjectives.length > 0 && (
+        <section className="mastered-section">
+          <h4>Phần bạn đã nắm</h4>
+          {masteredObjectives.slice(0, 4).map((objective) => (
+            <div key={objective}>
+              <CheckCircle2 size={13} />
+              <span>{objective}</span>
+            </div>
+          ))}
+        </section>
+      )}
+
+      <div className="completion-actions">
+        {wrongAnswers.length > 0 && (
+          <button onClick={onRetryWeak}>
+            <RotateCcw size={14} /> Làm lại câu sai
+          </button>
+        )}
+        <button className="secondary" onClick={onReset}>Tạo bộ câu hỏi mới</button>
+      </div>
+    </div>
+  );
+}
+
+function QuizWorkspace({ onReviewGaps }) {
   const [day, setDay] = useState('day-1');
   const [count, setCount] = useState(5);
   const [difficulty, setDifficulty] = useState('từ dễ đến khó');
@@ -125,6 +288,8 @@ function QuizWorkspace() {
   const [questionIndex, setQuestionIndex] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [revealed, setRevealed] = useState(false);
+  const [answers, setAnswers] = useState([]);
+  const [completed, setCompleted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -139,6 +304,8 @@ function QuizWorkspace() {
       setQuestionIndex(0);
       setSelectedAnswer(null);
       setRevealed(false);
+      setAnswers([]);
+      setCompleted(false);
     } catch (requestError) {
       setError(requestError.message);
     } finally {
@@ -151,6 +318,8 @@ function QuizWorkspace() {
     setQuestionIndex(0);
     setSelectedAnswer(null);
     setRevealed(false);
+    setAnswers([]);
+    setCompleted(false);
   };
 
   if (!quiz) {
@@ -211,18 +380,52 @@ function QuizWorkspace() {
     );
   }
 
+  if (completed) {
+    return (
+      <QuizCompletion
+        quiz={quiz}
+        answers={answers}
+        onReset={resetQuiz}
+        onRetryWeak={() => {
+          const weakQuestions = answers
+            .filter((answer) => !answer.isCorrect)
+            .map((answer) => answer.question);
+          setQuiz((current) => ({ ...current, questions: weakQuestions }));
+          setQuestionIndex(0);
+          setSelectedAnswer(null);
+          setRevealed(false);
+          setAnswers([]);
+          setCompleted(false);
+        }}
+        onReviewGaps={(gaps) => onReviewGaps(gaps, day)}
+      />
+    );
+  }
+
   const question = quiz.questions[questionIndex];
   const isCorrect = selectedAnswer === question.correct_option_id;
   const isLast = questionIndex === quiz.questions.length - 1;
 
   const goNext = () => {
     if (isLast) {
-      resetQuiz();
+      setCompleted(true);
       return;
     }
     setQuestionIndex((current) => current + 1);
     setSelectedAnswer(null);
     setRevealed(false);
+  };
+
+  const revealAnswer = () => {
+    setAnswers((current) => [
+      ...current,
+      {
+        question,
+        selectedAnswer,
+        isCorrect,
+      },
+    ]);
+    setRevealed(true);
   };
 
   return (
@@ -260,7 +463,7 @@ function QuizWorkspace() {
         <button
           className="check-answer-button"
           disabled={!selectedAnswer}
-          onClick={() => setRevealed(true)}
+          onClick={revealAnswer}
         >
           Kiểm tra đáp án
         </button>
@@ -274,8 +477,8 @@ function QuizWorkspace() {
             ))}
           </div>
           <button onClick={goNext}>
-            {isLast ? 'Tạo phiên mới' : 'Câu tiếp theo'}
-            {isLast ? <RotateCcw size={14} /> : <ChevronRight size={14} />}
+            {isLast ? 'Xem tổng kết' : 'Câu tiếp theo'}
+            {isLast ? <Target size={14} /> : <ChevronRight size={14} />}
           </button>
         </div>
       )}
@@ -372,6 +575,16 @@ export default function AiTutorPanel({
     }
   };
 
+  const reviewKnowledgeGaps = (gaps, quizDay) => {
+    setStudyDay(quizDay);
+    setInput(
+      `Mình vừa làm xong trắc nghiệm và cần ôn lại các phần sau: ${gaps
+        .slice(0, 5)
+        .join('; ')}. Hãy giúp mình ôn từng phần bằng câu hỏi gợi mở.`
+    );
+    onModeChange('study');
+  };
+
   return (
     <aside className="ai-tutor-panel" aria-label="VLearn AI Tutor">
       <div className="tutor-panel-header">
@@ -405,7 +618,9 @@ export default function AiTutorPanel({
       </div>
 
       {mode === 'quiz' ? (
-        <div className="tutor-panel-body quiz-body"><QuizWorkspace /></div>
+        <div className="tutor-panel-body quiz-body">
+          <QuizWorkspace onReviewGaps={reviewKnowledgeGaps} />
+        </div>
       ) : (
         <>
           {mode === 'study' && (

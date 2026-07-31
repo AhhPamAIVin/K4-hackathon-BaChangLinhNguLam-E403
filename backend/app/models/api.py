@@ -33,6 +33,7 @@ class StudyChatRequest(ApiModel):
 class Citation(ApiModel):
     id: str
     source: str
+    excerpt: str | None = Field(default=None, max_length=2000)
 
 
 class AgentAnswer(ApiModel):

@@ -130,7 +130,12 @@
 
 .reader-sidebar.closed {
   width: 0;
-  overflow: hidden;
+  overflow: visible;
+  border-right: 0;
+}
+
+.reader-sidebar.closed > :not(.btn-toggle-sidebar) {
+  display: none;
 }
 
 .sidebar-header {
