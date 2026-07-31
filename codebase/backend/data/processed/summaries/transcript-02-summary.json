@@ -1,0 +1,335 @@
+{
+  "transcript_id": "02",
+  "title": "Chỉ số thành công và mức tự động hoá",
+  "overview": "Bài giảng trình bày cách dùng ma trận tác động–nỗ lực để phân loại và ưu tiên công việc, xác định quick win, viết phát biểu bài toán, định lượng tác động và thiết kế chỉ số thành công. Nội dung cũng phân biệt các mức độ đo lường sản phẩm, giải thích North Star Metric và A/B testing, đồng thời giới thiệu cách lựa chọn giữa augmentation và automation तथा ba cấp độ kỹ thuật: rule-based, workflow và agent. Nguyên tắc xuyên suốt là bắt đầu từ vấn đề, chọn giải pháp đơn giản phù hợp, triển khai từng bước và kiểm soát rủi ro.",
+  "learning_objectives": [
+    "Giải thích cách sử dụng ma trận tác động–nỗ lực để lập danh sách, đánh giá và ưu tiên công việc.",
+    "Giải thích vì sao quick win có giá trị trong việc tạo động lực, niềm tin và định hướng triển khai.",
+    "Viết một phát biểu bài toán gồm đối tượng, quy trình hiện tại, nút thắt, tác động và chỉ số thành công.",
+    "Định lượng tác động của một bài toán bằng thời gian, giờ công, chi phí nhân công hoặc tỷ lệ workload.",
+    "Phân biệt chỉ số trung gian với North Star Metric và xác định chỉ số cuối cùng phù hợp với giá trị sản phẩm.",
+    "Mô tả nguyên lý A/B testing và các điều kiện cần để so sánh hai nhóm đáng tin cậy.",
+    "Phân biệt augmentation và automation, đồng thời lựa chọn mức độ tự động hoá dựa trên tác động và hậu quả khi sai.",
+    "Phân biệt ba cấp độ kỹ thuật: rule-based, workflow và agent; lựa chọn cách tiếp cận đơn giản trước khi dùng giải pháp phức tạp."
+  ],
+  "key_concepts": [
+    {
+      "name": "Ma trận tác động–nỗ lực",
+      "definition": "Framework dùng để lập danh sách công việc, phân loại theo tác động và nỗ lực, sau đó đánh giá và đặt ưu tiên; có thể áp dụng cho nhiều dự án hoặc chia nhỏ đến từng bước trong một quy trình.",
+      "why_it_matters": "Giúp khoanh vùng việc nên làm trước và xác định ưu tiên đầu tiên để chứng minh giá trị.",
+      "citations": [
+        "[T02-009]",
+        "[T02-013]"
+      ]
+    },
+    {
+      "name": "Quick win",
+      "definition": "Một việc có xác suất thành công cao được ưu tiên làm trước.",
+      "why_it_matters": "Một thành công nhỏ tạo thêm động lực; trong doanh nghiệp, quick win giúp tạo niềm tin và thúc đẩy mọi người tiếp tục triển khai.",
+      "citations": [
+        "[T02-010]"
+      ]
+    },
+    {
+      "name": "Phát biểu bài toán",
+      "definition": "Mô tả gồm đối tượng bị ảnh hưởng, quy trình hiện tại, các nút thắt, tác động của nút thắt và tiêu chí được coi là thành công khi giải quyết bài toán.",
+      "why_it_matters": "Tạo cơ sở để định hướng và lựa chọn giải pháp thay vì bắt đầu ngay từ một công nghệ.",
+      "citations": [
+        "[T02-015]",
+        "[T02-042]"
+      ]
+    },
+    {
+      "name": "Định lượng bài toán",
+      "definition": "Chuyển tác động của bài toán thành các đại lượng như số giờ công tiết kiệm, chi phí nhân công hoặc tỷ lệ workload trong ngày.",
+      "why_it_matters": "Giúp đánh giá mức tác động, ước tính giá trị và thuyết phục các cấp quản lý.",
+      "citations": [
+        "[T02-018]"
+      ]
+    },
+    {
+      "name": "North Star Metric",
+      "definition": "Chỉ số cuối cùng, đóng vai trò kim chỉ nam, thể hiện giá trị mà sản phẩm hướng tới.",
+      "why_it_matters": "Giúp phân biệt giá trị cuối cùng của sản phẩm với các chỉ số trung gian và định hướng hệ thống đo lường.",
+      "citations": [
+        "[T02-024]",
+        "[T02-025]"
+      ]
+    },
+    {
+      "name": "A/B testing",
+      "definition": "Thí nghiệm chia người dùng thành nhóm control không chịu tác động và nhóm có tác động, rồi so sánh kết quả để kiểm chứng giả thuyết.",
+      "why_it_matters": "Cho phép đánh giá tác động của từng tính năng dựa trên thí nghiệm có kiểm soát.",
+      "citations": [
+        "[T02-027]",
+        "[T02-028]"
+      ]
+    },
+    {
+      "name": "Augmentation",
+      "definition": "Mức độ sử dụng AI trong đó con người vẫn tham gia và AI hỗ trợ, tăng cường công việc.",
+      "why_it_matters": "Giữ sự giám sát của con người và thường là điểm khởi đầu an toàn hơn khi triển khai AI.",
+      "citations": [
+        "[T02-032]",
+        "[T02-033]"
+      ]
+    },
+    {
+      "name": "Automation",
+      "definition": "Mức độ sử dụng AI trong đó máy tự động thực hiện công việc hoặc AI làm thay con người.",
+      "why_it_matters": "Có thể tăng hiệu suất nhưng đi kèm rủi ro khi trao cho AI nhiều quyền tự chủ hơn.",
+      "citations": [
+        "[T02-032]",
+        "[T02-034]"
+      ]
+    },
+    {
+      "name": "Rule-based",
+      "definition": "Cấp độ giải pháp trong đó các quy tắc rõ ràng được viết thành code để máy thực hiện, không nhất thiết cần AI.",
+      "why_it_matters": "Đơn giản, dễ triển khai, an toàn và chắc chắn hơn các giải pháp phức tạp.",
+      "citations": [
+        "[T02-036]"
+      ]
+    },
+    {
+      "name": "Workflow",
+      "definition": "Cấp độ giải pháp trong đó bài toán được chia thành các bước hoặc nút; AI/LLM hỗ trợ tại một số nút, có thể có trình tự, phân nhánh, chạy song song hoặc các gate kiểm tra.",
+      "why_it_matters": "Phù hợp với bài toán không còn xử lý được chỉ bằng luật nhưng vẫn có thể mô hình hoá thành các bước tương đối rõ.",
+      "citations": [
+        "[T02-037]"
+      ]
+    },
+    {
+      "name": "Agent",
+      "definition": "Cấp độ giải pháp phức tạp hơn, cho phép hệ thống tự suy nghĩ, dùng công cụ, tự chia task hoặc phối hợp nhiều agent.",
+      "why_it_matters": "Có khả năng xử lý luồng phức tạp nhưng chi phí vận hành cao, khó kiểm soát và khó debug.",
+      "citations": [
+        "[T02-038]",
+        "[T02-039]"
+      ]
+    }
+  ],
+  "testable_points": [
+    {
+      "statement": "Ma trận tác động–nỗ lực có thể được áp dụng không chỉ để chọn giữa nhiều dự án mà còn để chia nhỏ và ưu tiên từng bước trong một dự án.",
+      "explanation": "Một quy trình có thể được tách thành các bước, sau đó đặt từng bước lên ma trận để xác định ưu tiên đầu tiên.",
+      "citations": [
+        "[T02-013]"
+      ]
+    },
+    {
+      "statement": "Khi cân nhắc đưa AI vào, cần bắt đầu từ vấn đề và xem xét các cách khác, thay vì mặc định dùng AI.",
+      "explanation": "Cần đánh giá AI có giải quyết tốt hơn làm thủ công, tạo khác biệt hoặc tạo đủ giá trị hay không.",
+      "citations": [
+        "[T02-014]"
+      ]
+    },
+    {
+      "statement": "Một phát biểu bài toán cần nêu đối tượng, quy trình hiện tại, nút thắt, tác động và điều kiện thành công.",
+      "explanation": "Các thành phần này giúp chuyển một vấn đề chung thành bài toán có thể đánh giá và định hướng giải pháp.",
+      "citations": [
+        "[T02-015]"
+      ]
+    },
+    {
+      "statement": "Chỉ số thành công phải gắn với kết quả mong muốn và có thể được diễn đạt bằng ngưỡng cụ thể.",
+      "explanation": "Ví dụ, nếu mục tiêu là giảm thời gian đọc tài liệu xuống dưới 5 phút thì dưới 5 phút là chỉ số thành công.",
+      "citations": [
+        "[T02-015]"
+      ]
+    },
+    {
+      "statement": "Định lượng tác động có thể dựa trên số giờ công tiết kiệm nhân với chi phí nhân công hoặc tỷ lệ workload được giảm.",
+      "explanation": "Không nhất thiết đạt độ chính xác tuyệt đối, nhưng cần có ước lượng để hình dung tác động.",
+      "citations": [
+        "[T02-018]"
+      ]
+    },
+    {
+      "statement": "Số lượng user, thời gian sử dụng và tỷ lệ quay lại có thể chỉ là các chỉ số trung gian, không nhất thiết phản ánh giá trị cuối cùng của sản phẩm.",
+      "explanation": "Sản phẩm học tập cần đo kết quả như điểm quiz hoặc khả năng làm bài tốt hơn, thay vì chỉ đo lượng truy cập hay retention.",
+      "citations": [
+        "[T02-021]",
+        "[T02-024]"
+      ]
+    },
+    {
+      "statement": "North Star Metric phải thể hiện value cuối cùng mà sản phẩm hướng tới.",
+      "explanation": "Các chỉ số bên dưới là những bậc thang và giả thuyết cần được kiểm chứng để dẫn tới chỉ số cuối cùng.",
+      "citations": [
+        "[T02-025]"
+      ]
+    },
+    {
+      "statement": "Trong A/B testing, hai nhóm cần tương đối đồng đều và được phân bổ ngẫu nhiên.",
+      "explanation": "Nếu mẫu quá nhỏ hoặc phân bổ không cân bằng, các đặc điểm đầu vào có thể làm sai lệch kết quả so sánh.",
+      "citations": [
+        "[T02-028]"
+      ]
+    },
+    {
+      "statement": "Mỗi lần A/B test chỉ nên thay đổi một biến.",
+      "explanation": "Nếu thay đổi nhiều tính năng cùng lúc, không thể xác định tính năng nào tạo ra ảnh hưởng.",
+      "citations": [
+        "[T02-029]"
+      ]
+    },
+    {
+      "statement": "Augmentation và automation là một phổ liên tục, không phải hai trạng thái tuyệt đối.",
+      "explanation": "Có thể bắt đầu bằng việc AI làm một số bước trong quy trình rồi tăng dần mức độ tự động hoá.",
+      "citations": [
+        "[T02-032]",
+        "[T02-033]"
+      ]
+    },
+    {
+      "statement": "Nên bắt đầu từ augmentation và tăng dần automation sau khi quan sát, xây dựng và đánh giá được khả năng của AI.",
+      "explanation": "Không nên cố gắng tự động hoá 100% ngay từ đầu vì có thể phát sinh rủi ro lớn.",
+      "citations": [
+        "[T02-033]"
+      ]
+    },
+    {
+      "statement": "Công việc có hậu quả nghiêm trọng nếu sai nên nằm gần phía augmentation hơn phía automation.",
+      "explanation": "Các công việc này cần nhiều sự can thiệp và hỗ trợ của con người để kiểm soát rủi ro.",
+      "citations": [
+        "[T02-034]"
+      ]
+    },
+    {
+      "statement": "Khi xây dựng giải pháp kỹ thuật, nên ưu tiên rule-based, sau đó workflow, rồi mới cân nhắc agent nếu các cách trước chạm giới hạn.",
+      "explanation": "Các cấp độ phức tạp hơn thường tốn kém, khó kiểm soát và khó debug hơn.",
+      "citations": [
+        "[T02-036]",
+        "[T02-037]",
+        "[T02-038]",
+        "[T02-039]"
+      ]
+    },
+    {
+      "statement": "Trong tư duy phát triển sản phẩm, cần đi từ vấn đề đến giải pháp đơn giản nhất có thể giải quyết vấn đề.",
+      "explanation": "Không nên cầm sẵn một solution rồi tạo ra vấn đề để áp dụng nó.",
+      "citations": [
+        "[T02-040]"
+      ]
+    }
+  ],
+  "examples": [],
+  "comparisons": [
+    {
+      "concept_a": "Augmentation",
+      "concept_b": "Automation",
+      "difference": "Augmentation vẫn cần con người tham gia và AI chỉ hỗ trợ, tăng cường công việc; automation để máy hoặc AI tự động thực hiện, làm thay công việc. Đây là hai đầu của một phổ mức độ can thiệp, không phải hai lựa chọn tuyệt đối.",
+      "citations": [
+        "[T02-032]",
+        "[T02-033]"
+      ]
+    },
+    {
+      "concept_a": "Chỉ số trung gian",
+      "concept_b": "North Star Metric",
+      "difference": "Chỉ số trung gian như số người dùng, thời gian sử dụng hoặc tỷ lệ quay lại giúp theo dõi các bước dẫn tới giá trị; North Star Metric thể hiện giá trị cuối cùng mà sản phẩm hướng tới.",
+      "citations": [
+        "[T02-024]",
+        "[T02-025]"
+      ]
+    },
+    {
+      "concept_a": "Rule-based",
+      "concept_b": "Workflow",
+      "difference": "Rule-based xử lý bằng các quy tắc rõ ràng có thể viết thành code; workflow chia bài toán thành các bước hoặc nút, trong đó có thể dùng AI/LLM hỗ trợ.",
+      "citations": [
+        "[T02-036]",
+        "[T02-037]"
+      ]
+    },
+    {
+      "concept_a": "Workflow",
+      "concept_b": "Agent",
+      "difference": "Workflow có các bước, nhánh hoặc hoạt động song song được thiết kế tương đối rõ; agent có thể tự suy nghĩ, dùng tool và tự chia task, nên phức tạp, tốn kém và khó debug hơn.",
+      "citations": [
+        "[T02-037]",
+        "[T02-038]",
+        "[T02-039]"
+      ]
+    },
+    {
+      "concept_a": "Visitor",
+      "concept_b": "User",
+      "difference": "Một visitor chỉ có thể là một lượt truy cập được công cụ thống kê ghi nhận; cùng một người dùng điện thoại và máy tính có thể bị tính thành hai visitor, nên không thể mặc nhiên coi mỗi visitor là một user thực tế.",
+      "citations": [
+        "[T02-020]"
+      ]
+    }
+  ],
+  "misconceptions": [
+    {
+      "incorrect_belief": "Công việc có nỗ lực thấp thì chắc chắn là quick win.",
+      "correction": "Nỗ lực thấp chưa đủ; còn phải xem công việc có thực sự tạo ra kết quả hoặc chiến thắng hay không. Ví dụ reminder đi ngủ có thể xây nhanh nhưng người dùng có làm theo hay không là vấn đề khác.",
+      "citations": [
+        "[T02-006]",
+        "[T02-007]"
+      ]
+    },
+    {
+      "incorrect_belief": "Có nhiều user hoặc nhiều user quay lại thì chắc chắn sản phẩm tốt và đã tạo ra giá trị.",
+      "correction": "Retention có thể đến từ incentive hoặc chi phí marketing; cần kiểm tra hành vi quay lại có tự nhiên không và đo giá trị cuối cùng mà sản phẩm tạo ra.",
+      "citations": [
+        "[T02-023]",
+        "[T02-024]"
+      ]
+    },
+    {
+      "incorrect_belief": "Có thể dùng số visitor trên Google Analytics để khẳng định số user thực tế.",
+      "correction": "Một visitor chỉ cần click vào trang; cùng một người trên hai trình duyệt hoặc thiết bị có thể bị tính thành hai visitor.",
+      "citations": [
+        "[T02-020]"
+      ]
+    },
+    {
+      "incorrect_belief": "Đã quyết định đưa AI vào thì không cần xem xét cách giải quyết thủ công hoặc cách khác.",
+      "correction": "Cần xác định vấn đề trước, xem xét các phương án khác và đánh giá AI có tốt hơn, khác biệt hơn hoặc tạo đủ giá trị hay không.",
+      "citations": [
+        "[T02-014]"
+      ]
+    },
+    {
+      "incorrect_belief": "Automation và augmentation là hai lựa chọn tách biệt: hoặc tự động hoá hoàn toàn hoặc không tự động hoá.",
+      "correction": "Đây là một phổ mức độ; thường nên bắt đầu bằng augmentation có con người giám sát rồi tăng dần automation.",
+      "citations": [
+        "[T02-032]",
+        "[T02-033]"
+      ]
+    },
+    {
+      "incorrect_belief": "Nên tự động hoá 100% ngay lập tức để đạt hiệu quả cao nhất.",
+      "correction": "Cần tăng dần mức độ tự động hoá, đặc biệt với công việc có rủi ro hoặc hậu quả nghiêm trọng khi sai.",
+      "citations": [
+        "[T02-033]",
+        "[T02-034]"
+      ]
+    },
+    {
+      "incorrect_belief": "Agent luôn là lựa chọn tốt hơn rule-based hoặc workflow.",
+      "correction": "Nên bắt đầu từ cách đơn giản; agent chỉ nên được cân nhắc khi các cách tiếp cận trước đã chạm giới hạn, vì agent tốn kém, khó kiểm soát và khó debug.",
+      "citations": [
+        "[T02-036]",
+        "[T02-038]",
+        "[T02-039]"
+      ]
+    },
+    {
+      "incorrect_belief": "Có thể thay đổi nhiều tính năng cùng lúc trong A/B test và vẫn biết tính năng nào tạo ra kết quả.",
+      "correction": "Mỗi lần test chỉ nên thay đổi một biến; nếu thay đổi hai biến cùng lúc thì không xác định được ảnh hưởng của từng biến.",
+      "citations": [
+        "[T02-029]"
+      ]
+    }
+  ],
+  "metadata": {
+    "schema_version": 2,
+    "day": "day-2",
+    "source_transcript": "transcript-02-clean.md",
+    "model": "gpt-5.6-luna"
+  }
+}

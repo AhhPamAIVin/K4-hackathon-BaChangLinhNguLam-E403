@@ -5,4 +5,5 @@ __pycache__/
 *.py[cod]
 *.env
 __pycache__/
-backend/data/processed/embeddings/vectors.jsonl
+codebase/backend/data/raw/
+codebase/backend/data/processed/embeddings/vectors.jsonl

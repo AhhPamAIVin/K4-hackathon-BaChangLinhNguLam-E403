@@ -1,0 +1,471 @@
+{
+  "transcript_id": "04",
+  "title": "Day 1 — Foundation: cách LLM hoạt động (Transformer, attention, agent)",
+  "overview": "Bài giảng giới thiệu bức tranh tổng quan về AI, lịch sử phát triển từ symbolic AI và hệ chuyên gia đến deep learning, Transformer và LLM. Nội dung trọng tâm gồm cơ chế dự đoán token, token và context, attention và multi-head attention, RLHF, các lớp bao quanh LLM để hình thành AI agent, cách gọi API, lựa chọn mô hình, evaluation và những giới hạn thực tế như hallucination, context rot, dữ liệu cập nhật và chi phí.",
+  "learning_objectives": [
+    "Giải thích được mối quan hệ giữa AI, machine learning, deep learning và generative AI.",
+    "Mô tả được cách LLM dự đoán token theo vòng lặp autoregressive và phân biệt token với từ hoặc ký tự.",
+    "Giải thích được vai trò của Transformer, attention và multi-head attention trong việc xử lý mối liên hệ giữa các từ.",
+    "Phân biệt được context, context window và context rot; áp dụng nguyên tắc quản lý context khi làm việc với AI.",
+    "Giải thích được vì sao LLM có thể sinh câu trả lời sai dù văn bản trông hợp lý.",
+    "Mô tả được các thành phần mở rộng LLM thành AI agent, gồm context, tool, memory và guardrail.",
+    "Phân biệt được các mức tiếp cận từ chat app, coding assistant, API đến self-host hoặc fine-tune.",
+    "Áp dụng được nguyên tắc lựa chọn mô hình theo độ phức tạp, yêu cầu công việc, chi phí và dữ liệu.",
+    "Giải thích được vai trò của RLHF, con người và dữ liệu gán nhãn trong quá trình huấn luyện mô hình.",
+    "Mô tả được các thành phần cơ bản của một lần gọi API LLM và cách chi phí tăng theo input, output và lịch sử hội thoại.",
+    "Giải thích được ý nghĩa cơ bản của temperature, top-k và top-p.",
+    "Nêu được vì sao evaluation là yếu tố quan trọng để đưa hệ thống AI từ demo vào môi trường thực tế."
+  ],
+  "key_concepts": [
+    {
+      "name": "Bức tranh phân cấp của AI",
+      "definition": "AI là phạm vi rộng nhất; machine learning là tập con dùng dữ liệu để máy học thay vì con người định nghĩa toàn bộ kết luận bằng luật; deep learning là tập con dùng mạng neuron nhiều tầng để tự học đặc trưng; generative AI là tầng bên trong cùng, có khả năng tạo nội dung như văn bản, hình ảnh, video hoặc nhạc.",
+      "why_it_matters": "Giúp xác định vị trí của LLM và generative AI trong toàn bộ lĩnh vực AI.",
+      "citations": [
+        "[T04-015]"
+      ]
+    },
+    {
+      "name": "Deep learning",
+      "definition": "Deep learning xây dựng các mạng neuron nhiều tầng để xử lý dữ liệu và tự nhận diện quy luật, đặc trưng mà không cần con người viết sẵn toàn bộ luật.",
+      "why_it_matters": "Đây là nền tảng cho khả năng học từ lượng lớn dữ liệu của nhiều mô hình AI hiện đại.",
+      "citations": [
+        "[T04-030]"
+      ]
+    },
+    {
+      "name": "Transformer",
+      "definition": "Transformer là kiến trúc được đặt nền tảng bởi bài báo “Attention Is All You Need” năm 2017; khác với RNN xử lý tuần tự từng chữ, Transformer dùng attention để nhìn các mối liên hệ giữa nhiều từ trong toàn bộ câu hoặc đoạn văn.",
+      "why_it_matters": "Transformer là nền tảng của ChatGPT và nhiều LLM hiện đại.",
+      "citations": [
+        "[T04-038]",
+        "[T04-040]"
+      ]
+    },
+    {
+      "name": "Attention",
+      "definition": "Attention giúp mô hình xác định từ hoặc cụm từ nào quan trọng, đo mối liên quan giữa các từ và tập trung vào những phần cần chú ý trong ngữ cảnh.",
+      "why_it_matters": "Attention giúp xử lý câu dài và các quan hệ giữa những từ không nhất thiết đứng cạnh nhau.",
+      "citations": [
+        "[T04-054]",
+        "[T04-055]"
+      ]
+    },
+    {
+      "name": "Multi-head attention",
+      "definition": "Multi-head attention dùng nhiều “con mắt” cùng quan sát một nội dung; mỗi head có thể nhận diện một đặc trưng hoặc quy luật khác nhau, sau đó các kết quả được tổng hợp.",
+      "why_it_matters": "Nó giúp mô hình nhìn văn bản từ nhiều góc độ và giảm nguy cơ bỏ sót quan hệ quan trọng.",
+      "citations": [
+        "[T04-056]"
+      ]
+    },
+    {
+      "name": "LLM và dự đoán token",
+      "definition": "LLM không trực tiếp “biết” tri thức theo cách con người biết; nó dự đoán token tiếp theo dựa trên các mẫu và xác suất đã học, sau đó nối token mới vào chuỗi và lặp lại quá trình.",
+      "why_it_matters": "Đây là cơ chế nền tảng để hiểu cách LLM sinh văn bản và những giới hạn của nó.",
+      "citations": [
+        "[T04-047]"
+      ]
+    },
+    {
+      "name": "Token",
+      "definition": "Token là đơn vị mà mô hình dùng để biểu diễn và tính toán văn bản; token không đồng nhất với một từ hoặc một chữ cái. Các ngôn ngữ khác nhau có thể tiêu tốn số token khác nhau.",
+      "why_it_matters": "Số token ảnh hưởng đến context window và chi phí gọi API.",
+      "citations": [
+        "[T04-049]",
+        "[T04-050]"
+      ]
+    },
+    {
+      "name": "Context và context window",
+      "definition": "Context là toàn bộ thông tin mô hình có thể tiếp nhận trong một lần; context window là giới hạn lượng thông tin đó tại một thời điểm.",
+      "why_it_matters": "Context quyết định mô hình có thể sử dụng bao nhiêu thông tin khi trả lời hoặc thực hiện tác vụ.",
+      "citations": [
+        "[T04-051]"
+      ]
+    },
+    {
+      "name": "Context rot",
+      "definition": "Context rot là hiện tượng mô hình càng nhận nhiều thông tin thì về sau càng kém hiệu quả và có thể quên thông tin ở phần đầu.",
+      "why_it_matters": "Context lớn không tự động đồng nghĩa với chất lượng tốt; cần cung cấp thông tin liên quan và chất lượng.",
+      "citations": [
+        "[T04-052]"
+      ]
+    },
+    {
+      "name": "Hallucination",
+      "definition": "Hallucination là hiện tượng mô hình tạo ra văn bản trông hợp lý nhưng thông tin thực tế có thể sai, do mô hình đang nối các token theo xác suất.",
+      "why_it_matters": "Người dùng không được đồng nhất văn bản trôi chảy với thông tin chính xác.",
+      "citations": [
+        "[T04-048]"
+      ]
+    },
+    {
+      "name": "RLHF",
+      "definition": "RLHF là reinforcement learning với con người tham gia: mô hình nhận reward khi làm đúng, bị trừ điểm khi làm sai và học dần qua quá trình khám phá; với tác vụ phức tạp, con người đánh giá chất lượng kết quả.",
+      "why_it_matters": "Giải thích cách phản hồi và đánh giá của con người góp phần định hướng hành vi mô hình.",
+      "citations": [
+        "[T04-059]",
+        "[T04-060]"
+      ]
+    },
+    {
+      "name": "AI agent",
+      "definition": "AI agent là mô hình được mở rộng bằng context, công cụ và kết nối với thế giới bên ngoài để không chỉ sinh văn bản mà còn lập kế hoạch, thực hiện tác vụ và tương tác với các hệ thống khác.",
+      "why_it_matters": "Agent là bước chuyển từ một LLM đơn thuần sang hệ thống có khả năng làm việc trong môi trường thực tế.",
+      "citations": [
+        "[T04-073]"
+      ]
+    },
+    {
+      "name": "Các lớp bao quanh LLM",
+      "definition": "Để LLM hoạt động hiệu quả trong thực tế, hệ thống có thể cần context, tool, memory và guardrail. Context cung cấp thông tin, tool kết nối công cụ bên ngoài, memory lưu trạng thái hoặc lịch sử, còn guardrail đặt giới hạn an toàn.",
+      "why_it_matters": "LLM chỉ là bộ não bên trong; sản phẩm AI cần thêm các lớp hệ thống để phù hợp với doanh nghiệp và môi trường thực tế.",
+      "citations": [
+        "[T04-074]"
+      ]
+    },
+    {
+      "name": "Evaluation",
+      "definition": "Evaluation là hệ thống đánh giá bằng bộ dữ liệu benchmark và quy trình tự động để kiểm tra chất lượng, phát hiện lỗi và đo tác động của thay đổi trong hệ thống AI.",
+      "why_it_matters": "Evaluation giúp chuyển sản phẩm từ demo sang vận hành thực tế, debug nhanh và đánh giá mô hình mới trước khi triển khai.",
+      "citations": [
+        "[T04-075]"
+      ]
+    },
+    {
+      "name": "Mixture of Experts",
+      "definition": "Mixture of Experts chia mô hình thành các cụm nhỏ hơn và chỉ kích hoạt một số cụm phù hợp với từng task thay vì chạy qua toàn bộ tham số.",
+      "why_it_matters": "Cách này có thể giúp giảm chi phí và tăng tốc độ xử lý.",
+      "citations": [
+        "[T04-086]"
+      ]
+    },
+    {
+      "name": "Temperature, top-k và top-p",
+      "definition": "Temperature điều chỉnh mức độ ngẫu nhiên khi chọn token; temperature bằng 0 ưu tiên token có xác suất cao nhất. Top-k giới hạn lựa chọn vào k token có xác suất cao nhất. Top-p giới hạn lựa chọn vào nhóm token có tổng xác suất đạt ngưỡng p.",
+      "why_it_matters": "Các tham số này ảnh hưởng đến độ ổn định, phạm vi lựa chọn và mức độ sáng tạo của đầu ra.",
+      "citations": [
+        "[T04-071]",
+        "[T04-072]"
+      ]
+    }
+  ],
+  "testable_points": [
+    {
+      "statement": "Symbolic AI dạy máy bằng cách viết các luật rõ ràng, nhưng gặp giới hạn khi bài toán có quá nhiều bối cảnh và lựa chọn dẫn đến bùng nổ tổ hợp.",
+      "explanation": "Phương pháp này phù hợp với task đủ hẹp để có thể định nghĩa luật, nhưng không thể liệt kê hết luật của thế giới phức tạp.",
+      "citations": [
+        "[T04-024]",
+        "[T04-025]",
+        "[T04-027]"
+      ]
+    },
+    {
+      "statement": "Hệ chuyên gia khắc phục một phần giới hạn của AI quá rộng bằng cách tập trung vào các tác vụ đủ nhỏ trong một lĩnh vực.",
+      "explanation": "Tuy nhiên, tri thức vẫn phải nhập bằng tay và luật phải cập nhật khi bối cảnh thay đổi, dẫn đến nợ kỹ thuật và mùa đông AI thứ hai.",
+      "citations": [
+        "[T04-028]",
+        "[T04-029]"
+      ]
+    },
+    {
+      "statement": "Deep learning cần cả kiến trúc phù hợp, dữ liệu đủ lớn hoặc chất lượng và phần cứng GPU để đạt hiệu quả.",
+      "explanation": "Thiếu một trong các yếu tố này có thể khiến mô hình không đạt được năng lực cần thiết.",
+      "citations": [
+        "[T04-033]"
+      ]
+    },
+    {
+      "statement": "Trong deep learning, con người vẫn cần gán nhãn dữ liệu ban đầu, nhưng mô hình tự học các đặc trưng từ dữ liệu đã gán nhãn.",
+      "explanation": "Ví dụ nhận diện chó và mèo: mô hình được cung cấp nhiều hình ảnh đã biết nhãn rồi tự tìm các đặc trưng chung.",
+      "citations": [
+        "[T04-030]",
+        "[T04-032]"
+      ]
+    },
+    {
+      "statement": "AlphaGo học từ khoảng 150.000 ván cờ của chuyên gia rồi tự chơi với chính nó hàng triệu lần.",
+      "explanation": "Việc tự đấu giúp AlphaGo khám phá những nước đi mới mà con người chưa từng thấy, trong đó có nước đi số 37.",
+      "citations": [
+        "[T04-035]",
+        "[T04-036]"
+      ]
+    },
+    {
+      "statement": "RNN xử lý tuần tự từng chữ và có thể quên thông tin ở đầu khi câu quá dài.",
+      "explanation": "Transformer dùng attention để nhìn các mối liên hệ rộng hơn trong câu và xử lý vấn đề này tốt hơn.",
+      "citations": [
+        "[T04-039]",
+        "[T04-040]"
+      ]
+    },
+    {
+      "statement": "Vòng lặp sinh văn bản autoregressive của LLM là dự đoán, sinh hoặc append token, rồi chạy lại với chuỗi đã cập nhật.",
+      "explanation": "Quá trình lặp lại cho đến khi hoàn thành đầu ra.",
+      "citations": [
+        "[T04-047]",
+        "[T04-096]"
+      ]
+    },
+    {
+      "statement": "Token là đơn vị tính chi phí và độ dài ngữ cảnh; tiếng Việt thường tiêu tốn nhiều token hơn tiếng Anh theo cách giải thích trong bài.",
+      "explanation": "Vì vậy, cùng một nội dung có thể có chi phí xử lý khác nhau tùy ngôn ngữ.",
+      "citations": [
+        "[T04-049]",
+        "[T04-050]"
+      ]
+    },
+    {
+      "statement": "Context window lớn không bảo đảm mô hình xử lý tốt hơn vì có thể xảy ra context rot.",
+      "explanation": "Khi đưa quá nhiều thông tin, mô hình có thể chú ý sai chỗ hoặc quên thông tin ban đầu; context cần được quản lý có chủ đích.",
+      "citations": [
+        "[T04-052]",
+        "[T04-053]"
+      ]
+    },
+    {
+      "statement": "Khi làm việc với AI, nên cung cấp context liên quan và chất lượng thay vì đưa toàn bộ thông tin không được chọn lọc.",
+      "explanation": "Quản lý sự chú ý và context có thể giúp duy trì hiệu năng và tiết kiệm chi phí.",
+      "citations": [
+        "[T04-053]",
+        "[T04-057]"
+      ]
+    },
+    {
+      "statement": "Với cuộc hội thoại dài qua API, các lần gọi sau có thể đắt hơn vì lịch sử hội thoại được cộng vào context mỗi lần gọi.",
+      "explanation": "Có thể tối ưu bằng cách tóm tắt hoặc lưu lại các quyết định quan trọng thay vì truyền toàn bộ lịch sử.",
+      "citations": [
+        "[T04-088]",
+        "[T04-057]"
+      ]
+    },
+    {
+      "statement": "Temperature bằng 0 khiến mô hình ưu tiên token có xác suất cao nhất và đầu ra giữa các lần chạy gần như deterministic.",
+      "explanation": "Temperature cao hơn mở rộng mức độ random trong phạm vi lựa chọn đã được xác định.",
+      "citations": [
+        "[T04-072]",
+        "[T04-096]"
+      ]
+    },
+    {
+      "statement": "Top-k và top-p dùng để khoanh vùng tập token được phép lựa chọn, còn temperature điều chỉnh mức độ ngẫu nhiên trong tập đó.",
+      "explanation": "Top-k chọn theo số lượng token; top-p chọn theo tổng xác suất tích lũy.",
+      "citations": [
+        "[T04-071]",
+        "[T04-072]"
+      ]
+    },
+    {
+      "statement": "LLM bị giới hạn bởi dữ liệu huấn luyện và có thể không biết thông tin mới nhất nếu không được cung cấp context hoặc công cụ tra cứu.",
+      "explanation": "Vì vậy hệ thống hiện đại thường bổ sung upload file, công cụ tìm kiếm hoặc các tool khác.",
+      "citations": [
+        "[T04-067]"
+      ]
+    },
+    {
+      "statement": "Chat app dễ tiếp cận hơn nhưng ít tùy biến hơn API; API cho quyền kiểm soát sâu hơn nhưng yêu cầu prompt và đầu ra rõ ràng hơn.",
+      "explanation": "Mức độ kiểm soát tăng đi kèm với mức độ phức tạp và năng lực cần thiết của người dùng.",
+      "citations": [
+        "[T04-068]"
+      ]
+    },
+    {
+      "statement": "Một lần gọi API có input và output; cả hai đều có chi phí, trong đó output thường đắt hơn input.",
+      "explanation": "Chi phí còn phụ thuộc vào mức độ thông minh hoặc loại mô hình được sử dụng.",
+      "citations": [
+        "[T04-087]"
+      ]
+    },
+    {
+      "statement": "System prompt chứa các quy tắc tổng quát cho mô hình, user input là yêu cầu cụ thể của người dùng, còn response chứa kết quả và thông tin usage như số token.",
+      "explanation": "Đây là các thành phần cơ bản khi xây dựng request và xử lý response của API.",
+      "citations": [
+        "[T04-089]"
+      ]
+    },
+    {
+      "statement": "Mô hình nên được chọn theo bài toán, độ khó, năng lực cần thiết và chi phí thay vì chỉ dựa vào vị trí trên leaderboard.",
+      "explanation": "Việc đơn giản nên thử mô hình rẻ nhưng đủ mạnh; việc khó mới cần mô hình có năng lực suy luận cao.",
+      "citations": [
+        "[T04-084]"
+      ]
+    },
+    {
+      "statement": "Evaluation cần được xây dựng trước hoặc song song với sản phẩm để biết hệ thống sai ở đâu, tác động của thay đổi và khả năng triển khai mô hình mới.",
+      "explanation": "Nếu chỉ có demo mà không có evaluation, hệ thống khó debug và khó vận hành ổn định trong thế giới thật.",
+      "citations": [
+        "[T04-075]",
+        "[T04-091]"
+      ]
+    }
+  ],
+  "examples": [],
+  "comparisons": [
+    {
+      "concept_a": "RNN",
+      "concept_b": "Transformer",
+      "difference": "RNN xử lý tuần tự từng chữ và có thể quên thông tin ở đầu câu khi văn bản dài; Transformer dùng attention để nhìn mối liên hệ giữa nhiều từ trong phạm vi rộng hơn.",
+      "citations": [
+        "[T04-039]",
+        "[T04-040]"
+      ]
+    },
+    {
+      "concept_a": "Machine learning trước deep learning",
+      "concept_b": "Deep learning",
+      "difference": "Machine learning thường yêu cầu con người mô tả hoặc gán các đặc trưng để mô hình phân loại; deep learning học các đặc trưng từ dữ liệu thông qua mạng neuron nhiều tầng.",
+      "citations": [
+        "[T04-032]"
+      ]
+    },
+    {
+      "concept_a": "Token",
+      "concept_b": "Từ hoặc chữ cái",
+      "difference": "Token là đơn vị tính toán của mô hình và không nhất thiết trùng với một từ hoặc một chữ cái.",
+      "citations": [
+        "[T04-049]"
+      ]
+    },
+    {
+      "concept_a": "Context",
+      "concept_b": "Context window",
+      "difference": "Context là toàn bộ thông tin được đưa vào hoặc mô hình có thể sử dụng; context window là giới hạn lượng thông tin mô hình có thể tiếp nhận trong một lần.",
+      "citations": [
+        "[T04-051]"
+      ]
+    },
+    {
+      "concept_a": "Top-k/top-p",
+      "concept_b": "Temperature",
+      "difference": "Top-k và top-p khoanh vùng tập token có thể được chọn; temperature điều chỉnh mức độ ngẫu nhiên khi chọn trong tập đó.",
+      "citations": [
+        "[T04-071]",
+        "[T04-072]"
+      ]
+    },
+    {
+      "concept_a": "LLM",
+      "concept_b": "AI agent",
+      "difference": "LLM chủ yếu là mô hình dự đoán và sinh token; AI agent được bổ sung công cụ, context và kết nối bên ngoài để lập kế hoạch, thực hiện tác vụ và tương tác với thế giới.",
+      "citations": [
+        "[T04-047]",
+        "[T04-073]"
+      ]
+    },
+    {
+      "concept_a": "Chat app",
+      "concept_b": "API",
+      "difference": "Chat app dễ sử dụng nhưng ít kiểm soát và tùy biến hơn; API ở mức thô hơn, cho phép kiểm soát sâu hơn nhưng yêu cầu người dùng thiết kế prompt và đầu ra rõ ràng.",
+      "citations": [
+        "[T04-068]"
+      ]
+    },
+    {
+      "concept_a": "Cứu hộ cứu nạn",
+      "concept_b": "Cứu trợ",
+      "difference": "Cứu hộ cứu nạn là cứu người đang bị mắc kẹt hoặc gặp nguy hiểm; cứu trợ là đưa đồ ăn, lương thực và nhu yếu phẩm. Đây là ví dụ về sự khác biệt giữa một hệ thống công nghệ và quy trình vận hành thực tế.",
+      "citations": [
+        "[T04-010]"
+      ]
+    }
+  ],
+  "misconceptions": [
+    {
+      "incorrect_belief": "LLM trực tiếp hiểu và biết chắc tri thức mà nó trả lời.",
+      "correction": "LLM về bản chất dự đoán token tiếp theo theo xác suất; vì vậy câu trả lời có thể trông hợp lý nhưng vẫn sai và tạo hallucination.",
+      "citations": [
+        "[T04-047]",
+        "[T04-048]"
+      ]
+    },
+    {
+      "incorrect_belief": "Context window càng lớn thì mô hình luôn càng tốt.",
+      "correction": "Context lớn có thể gây context rot; mô hình có thể chú ý sai chỗ hoặc quên thông tin ban đầu. Context cần được chọn lọc và quản lý.",
+      "citations": [
+        "[T04-052]",
+        "[T04-053]"
+      ]
+    },
+    {
+      "incorrect_belief": "Chỉ cần đưa thật nhiều thông tin vào context là mô hình sẽ xử lý tốt hơn.",
+      "correction": "Nên đưa thông tin chất lượng, liên quan và chỉ rõ phần cần chú ý để mô hình sử dụng sự chú ý hiệu quả.",
+      "citations": [
+        "[T04-053]"
+      ]
+    },
+    {
+      "incorrect_belief": "LLM tự biết các tin tức hoặc dữ liệu mới nhất.",
+      "correction": "Mô hình bị giới hạn bởi dữ liệu đã được huấn luyện; để xử lý thông tin mới cần bổ sung context, tra cứu hoặc tool.",
+      "citations": [
+        "[T04-067]"
+      ]
+    },
+    {
+      "incorrect_belief": "Chatbot chính là toàn bộ AI hoặc LLM.",
+      "correction": "Chatbot chỉ là một giao diện tương tác; nền tảng phía dưới có thể là LLM và các lớp context, tool, memory hoặc guardrail.",
+      "citations": [
+        "[T04-046]",
+        "[T04-074]"
+      ]
+    },
+    {
+      "incorrect_belief": "Mô hình có nhiều parameter hơn thì luôn mạnh hơn cho mọi công việc.",
+      "correction": "Mô hình ít parameter nhưng chuyên biệt vẫn có thể mạnh trong một tác vụ cụ thể; cần chọn theo bài toán.",
+      "citations": [
+        "[T04-058]"
+      ]
+    },
+    {
+      "incorrect_belief": "Mô hình rẻ hoặc đơn giản không thể dùng cho sản phẩm thực tế.",
+      "correction": "Tác vụ đơn giản, khối lượng lớn có thể dùng mô hình rẻ nhưng đủ mạnh; mô hình mạnh hơn nên dành cho việc khó và phức tạp.",
+      "citations": [
+        "[T04-084]",
+        "[T04-096]"
+      ]
+    },
+    {
+      "incorrect_belief": "Temperature là tham số quyết định phạm vi token được phép chọn.",
+      "correction": "Top-k và top-p khoanh vùng phạm vi lựa chọn; temperature điều chỉnh độ ngẫu nhiên trong phạm vi đó.",
+      "citations": [
+        "[T04-071]",
+        "[T04-072]"
+      ]
+    },
+    {
+      "incorrect_belief": "AI agent chỉ là một LLM sinh văn bản.",
+      "correction": "Agent cần được kết nối với công cụ và thế giới bên ngoài để có thể thực hiện tác vụ, lập kế hoạch và tương tác với hệ thống khác.",
+      "citations": [
+        "[T04-073]"
+      ]
+    },
+    {
+      "incorrect_belief": "Một demo chạy được nghĩa là sản phẩm AI đã sẵn sàng đưa ra thế giới thật.",
+      "correction": "Cần có evaluation và benchmark tự động để đo chất lượng, phát hiện lỗi, debug và theo dõi tác động của thay đổi.",
+      "citations": [
+        "[T04-075]"
+      ]
+    },
+    {
+      "incorrect_belief": "Lịch sử hội thoại không ảnh hưởng đến chi phí API.",
+      "correction": "Mỗi lần gọi thường truyền thêm lịch sử vào context, nên càng hội thoại dài thì càng tốn token và chi phí.",
+      "citations": [
+        "[T04-088]"
+      ]
+    },
+    {
+      "incorrect_belief": "Cứ tối ưu một bài toán nhỏ đến mức cao nhất thì sản phẩm sẽ bền vững.",
+      "correction": "Do mô hình thay đổi nhanh, một tính năng mới của mô hình lớn có thể giải quyết bài toán đó; nên cân nhắc xây dựng hệ thống có khả năng thích ứng.",
+      "citations": [
+        "[T04-077]",
+        "[T04-078]"
+      ]
+    }
+  ],
+  "metadata": {
+    "schema_version": 2,
+    "day": "day-1",
+    "source_transcript": "transcript-04-clean.md",
+    "model": "gpt-5.6-luna"
+  }
+}

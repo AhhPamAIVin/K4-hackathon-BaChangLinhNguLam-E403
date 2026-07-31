@@ -1,0 +1,580 @@
+{
+  "transcript_id": "03",
+  "title": "Soi bài toán các nhóm: tự động hoá, LLM, công cụ và ràng buộc",
+  "overview": "Bài giảng hướng dẫn người học đánh giá bài toán trước khi xây dựng AI system hoặc AI agent. Trọng tâm là nhận diện giới hạn của LLM, tách phần xác suất khỏi phần deterministic, kết hợp LLM với tool, RAG, cơ sở dữ liệu và workflow phù hợp; đồng thời xác định scope, constraint, metric, chi phí, rủi ro, bảo mật, human-in-the-loop và phương án xử lý khi hệ thống gặp lỗi. Bài giảng cũng phân biệt vai trò AI Engineer, MLOps và AI PM, nhấn mạnh việc chọn dự án có giá trị, có thể đo lường và có kế hoạch dừng hoặc chuyển hướng khi không đạt mục tiêu.",
+  "learning_objectives": [
+    "Giải thích điểm mạnh, giới hạn và tính xác suất của LLM trong các bài toán khác nhau.",
+    "Phân biệt khi nào nên dùng LLM thuần túy và khi nào cần kết hợp tool, function code, cơ sở dữ liệu, graph, RAG hoặc logic deterministic.",
+    "Phân tích một bài toán để xác định scope, constraint, ODD, metric, chi phí vận hành và các rủi ro có thể xảy ra.",
+    "Thiết kế cách xử lý lỗi, fallback, safety layer, human-in-the-loop và thông báo cho người dùng trong AI system.",
+    "Phân biệt vai trò của AI Engineer, MLOps và AI PM trong quá trình xây dựng, triển khai và quản lý hệ thống.",
+    "Đánh giá ý tưởng dự án dựa trên khả năng kỹ thuật, giá trị cạnh tranh, nhu cầu người dùng, chi phí và khả năng đo lường.",
+    "Mô tả các workflow pattern cơ bản gồm chaining, routing, parallel và agent."
+  ],
+  "key_concepts": [
+    {
+      "name": "LLM là mô hình xác suất",
+      "definition": "LLM là mô hình xác suất thống kê, nên không bảo đảm câu trả lời đúng trong mọi trường hợp; tính ổn định chỉ được bảo đảm khi model và input không đổi.",
+      "why_it_matters": "Giúp quyết định phần nào không nên giao trực tiếp cho LLM và phần nào cần tool, function hoặc logic kiểm tra.",
+      "citations": [
+        "[T03-078]"
+      ]
+    },
+    {
+      "name": "Deterministic",
+      "definition": "Phần deterministic là phần có kết quả chắc chắn theo công thức hoặc logic đã xác định, chẳng hạn tính toán bằng function code.",
+      "why_it_matters": "Các phần cần độ chính xác cao nên được tách khỏi LLM và biểu diễn bằng công thức, tool call hoặc function code.",
+      "citations": [
+        "[T03-074]",
+        "[T03-078]"
+      ]
+    },
+    {
+      "name": "Tool calling",
+      "definition": "Tool calling là việc LLM nhận diện intent, trích xuất tham số rồi gọi một function hoặc công cụ bên ngoài để xử lý tác vụ.",
+      "why_it_matters": "Có thể làm các tác vụ như đếm ký tự hoặc tính toán chính xác hơn so với để LLM tự trả lời.",
+      "citations": [
+        "[T03-034]",
+        "[T03-079]"
+      ]
+    },
+    {
+      "name": "RAG",
+      "definition": "RAG là cơ chế retrieval thông tin liên quan, chẳng hạn tài liệu nội bộ công ty, rồi đưa phần thông tin đó vào ngữ cảnh để LLM trả lời.",
+      "why_it_matters": "Cần thiết khi câu trả lời phụ thuộc vào dữ liệu nội bộ không có trong dữ liệu huấn luyện của LLM.",
+      "citations": [
+        "[T03-036]"
+      ]
+    },
+    {
+      "name": "Scope và constraint",
+      "definition": "Scope xác định hệ thống được thiết kế để làm gì và chạy trong điều kiện nào; constraint giới hạn cách sử dụng hoặc điều kiện đầu vào để hệ thống hoạt động đáng tin cậy.",
+      "why_it_matters": "Scope càng rõ và hẹp thì hệ thống càng ít việc phải xử lý, dễ kiểm soát chi phí và độ chính xác hơn.",
+      "citations": [
+        "[T03-097]",
+        "[T03-109]"
+      ]
+    },
+    {
+      "name": "ODD (Operational Design Domain)",
+      "definition": "ODD là phạm vi tình huống vận hành mà trong đó hệ thống được bảo đảm hoạt động tốt.",
+      "why_it_matters": "Giúp phân biệt lỗi trong phạm vi thiết kế với tình huống rủi ro hoặc ngoài điều kiện vận hành đã xác định.",
+      "citations": [
+        "[T03-105]"
+      ]
+    },
+    {
+      "name": "Metric",
+      "definition": "Metric là chỉ số đo lường mục tiêu và kết quả của dự án, dùng để xác định đạt, chưa đạt, tiếp tục hay dừng dự án.",
+      "why_it_matters": "Giúp tránh tiếp tục đầu tư vào dự án không đạt mục tiêu và làm cơ sở báo cáo với người ra quyết định.",
+      "citations": [
+        "[T03-043]",
+        "[T03-091]"
+      ]
+    },
+    {
+      "name": "Human-in-the-loop",
+      "definition": "Human-in-the-loop là cơ chế yêu cầu con người kiểm tra hoặc phê duyệt trước những hành động có ảnh hưởng đến thế giới thật hoặc có rủi ro.",
+      "why_it_matters": "Giảm rủi ro khi hệ thống gửi email, chuyển tiền, ký hợp đồng hoặc thực hiện hành động quan trọng.",
+      "citations": [
+        "[T03-130]"
+      ]
+    },
+    {
+      "name": "AI Engineer",
+      "definition": "AI Engineer tập trung vào các kỹ thuật xử lý luồng AI system để tạo ra kết quả tốt nhất.",
+      "why_it_matters": "Đây là vai trò chịu trách nhiệm chính về logic và chất lượng xử lý của hệ thống AI.",
+      "citations": [
+        "[T03-014]"
+      ]
+    },
+    {
+      "name": "MLOps",
+      "definition": "MLOps chịu trách nhiệm triển khai hệ thống AI vào thực tế, bao gồm hạ tầng, scale, lưu trữ, backup, chi phí, performance và latency.",
+      "why_it_matters": "Một mô hình tốt vẫn cần được triển khai ổn định, tiết kiệm và phù hợp với số lượng người dùng.",
+      "citations": [
+        "[T03-015]"
+      ]
+    },
+    {
+      "name": "AI PM",
+      "definition": "AI PM chuyển yêu cầu khách hàng thành ngôn ngữ đội kỹ thuật hiểu được, phản hồi giới hạn kỹ thuật cho khách hàng và nhìn tổng thể rủi ro của hệ thống.",
+      "why_it_matters": "AI PM kết nối nhu cầu kinh doanh, khả năng kỹ thuật, phạm vi, metric và quyết định tiếp tục hay dừng dự án.",
+      "citations": [
+        "[T03-016]",
+        "[T03-017]"
+      ]
+    },
+    {
+      "name": "Workflow pattern",
+      "definition": "Workflow pattern là cách tổ chức các khối xử lý trong hệ thống, gồm chaining, routing, parallel và agent.",
+      "why_it_matters": "Chọn đúng pattern giúp hệ thống xử lý tuần tự, phân nhánh hoặc song song phù hợp với bài toán và tài nguyên.",
+      "citations": [
+        "[T03-131]",
+        "[T03-132]",
+        "[T03-133]"
+      ]
+    }
+  ],
+  "testable_points": [
+    {
+      "statement": "LLM mạnh về suy luận ngữ nghĩa dựa trên văn bản hội thoại, nhưng không phải lựa chọn mặc định cho các bài toán duyệt đồ thị, tìm kiếm tối ưu hoặc mô hình Markov.",
+      "explanation": "Bài toán lập kế hoạch du lịch với nhiều trạng thái, vị trí và ràng buộc nên được biểu diễn bằng state graph hoặc graph traversal thay vì chỉ nhập instruction cho LLM.",
+      "citations": [
+        "[T03-029]",
+        "[T03-030]",
+        "[T03-033]"
+      ]
+    },
+    {
+      "statement": "Khi bắt đầu một dự án, nên thu hẹp yêu cầu thay vì cố hoàn thiện toàn bộ yêu cầu lớn ngay lập tức.",
+      "explanation": "Có thể tập trung trước vào một số tiêu chí như thời gian rảnh và khoảng cách, sau đó cải tiến dần các yêu cầu khác.",
+      "citations": [
+        "[T03-031]"
+      ]
+    },
+    {
+      "statement": "LLM có thể kết hợp với cơ sở dữ liệu và API bên ngoài để xử lý dữ liệu ổn định hoặc thay đổi theo thời gian.",
+      "explanation": "Trong bài toán du lịch, cơ sở dữ liệu lưu địa điểm cố định còn API thời tiết cung cấp thông tin tại thời điểm sử dụng.",
+      "citations": [
+        "[T03-028]"
+      ]
+    },
+    {
+      "statement": "Để đếm ký tự hoặc thực hiện phép tính, nên để LLM nhận diện intent và tham số rồi gọi function thay vì yêu cầu LLM tự tính hoàn toàn.",
+      "explanation": "Function code có thể nhận từ và ký tự cần đếm hoặc hai số cần cộng, sau đó trả về kết quả xác định.",
+      "citations": [
+        "[T03-034]",
+        "[T03-035]"
+      ]
+    },
+    {
+      "statement": "RAG phù hợp khi chatbot phải trả lời dựa trên quy tắc hoặc tài liệu nội bộ của công ty.",
+      "explanation": "Thông tin nội bộ không nằm trong dữ liệu huấn luyện chung của LLM; hệ thống cần retrieval tài liệu liên quan để đưa vào ngữ cảnh.",
+      "citations": [
+        "[T03-036]"
+      ]
+    },
+    {
+      "statement": "Fine-tuning đòi hỏi dữ liệu, kinh nghiệm phát triển model và quy trình validate; không phải lúc nào cũng tốt hơn RAG.",
+      "explanation": "Fine-tuning có thể làm giảm khả năng generalization của model gốc và thường tốn nhiều công sức.",
+      "citations": [
+        "[T03-119]"
+      ]
+    },
+    {
+      "statement": "Một ý tưởng có thể dùng LLM vẫn phải được kiểm tra thêm xem người dùng có thể tự làm bằng các công cụ sẵn có như ChatGPT hoặc Gemini hay không.",
+      "explanation": "Nếu sản phẩm chỉ gọi lại API và không tạo thêm giá trị, ý tưởng có thể khó cạnh tranh.",
+      "citations": [
+        "[T03-037]"
+      ]
+    },
+    {
+      "statement": "Giá trị của ứng dụng có thể nằm ở việc kết nối nhiều tác vụ, tạo không gian tương tác, cạnh tranh hoặc cộng đồng mà người dùng khó tự xây dựng.",
+      "explanation": "Ví dụ hệ thống học tiếng Anh kết hợp ra đề, đánh giá điểm yếu, tạo bài luyện và speaking có thể tạo giá trị vượt việc gọi riêng từng công cụ.",
+      "citations": [
+        "[T03-038]"
+      ]
+    },
+    {
+      "statement": "Các tác vụ lặp đi lặp lại, xử lý số lượng lớn, duyệt dữ liệu, đọc hồ sơ và tóm tắt là những loại tác vụ AI thường xử lý tốt.",
+      "explanation": "Đây là các hoạt động máy tính có lợi thế về tốc độ và khả năng truy cập dữ liệu.",
+      "citations": [
+        "[T03-045]"
+      ]
+    },
+    {
+      "statement": "Khi sinh đề toán, phần công thức và quan hệ giữa biến số nên được xử lý deterministic; LLM có thể đảm nhiệm việc paraphrase đề.",
+      "explanation": "Thay đổi tham số trong một công thức đúng giúp bảo đảm đáp án, còn LLM chỉ viết lại bối cảnh hoặc câu chữ.",
+      "citations": [
+        "[T03-074]",
+        "[T03-075]"
+      ]
+    },
+    {
+      "statement": "Một hệ thống cần có safety layer hoặc logic hard-code để chặn hành động nguy hiểm ngay cả khi LLM đưa ra quyết định sai.",
+      "explanation": "Logic an toàn có thể có priority cao hơn quyết định của LLM và buộc hệ thống dừng hoặc báo lỗi.",
+      "citations": [
+        "[T03-080]"
+      ]
+    },
+    {
+      "statement": "Khi chọn dự án, nhóm phải đánh giá pain point, workflow, cost, hậu quả khi AI sai và người phê duyệt.",
+      "explanation": "Các yếu tố này cần được cả nhóm lập thành bảng để bảo đảm dự án có thể delivery.",
+      "citations": [
+        "[T03-081]"
+      ]
+    },
+    {
+      "statement": "Chi phí cần được tính theo trường hợp xấu nhất, bao gồm API call, hạ tầng, lưu trữ và số lượng người dùng.",
+      "explanation": "Nhóm cần ước tính mức sử dụng cao nhất để đưa ra con số vận hành cho người quyết định.",
+      "citations": [
+        "[T03-084]",
+        "[T03-085]"
+      ]
+    },
+    {
+      "statement": "Khi chi phí API quá cao, các phương án có thể gồm chuyển sang model rẻ hơn hoặc tự host model.",
+      "explanation": "Tự host giảm giới hạn API call nhưng phát sinh chi phí GPU và CPU liên tục.",
+      "citations": [
+        "[T03-086]"
+      ]
+    },
+    {
+      "statement": "Dự án cần metric và deadline để xác định khi nào tiếp tục, xin thêm thời gian thử nghiệm hoặc dừng.",
+      "explanation": "Nếu chưa đạt mục tiêu nhưng còn giải pháp để thử, nhóm có thể xin thêm thời gian; nếu đã hết hướng thì nên đổi dự án.",
+      "citations": [
+        "[T03-043]"
+      ]
+    },
+    {
+      "statement": "Khi hệ thống có lỗi, cần báo cho người dùng và khoanh vùng lỗi thay vì để người dùng tiếp tục trong cùng một luồng lỗi.",
+      "explanation": "Hệ thống có thể tạm dừng phần lỗi hoặc chuyển người dùng sang session mới để tránh lỗi lan sang các bước sau.",
+      "citations": [
+        "[T03-124]"
+      ]
+    },
+    {
+      "statement": "Test AI system phải bao gồm các kịch bản một hoặc nhiều bộ phận bị lỗi, người dùng cố tình phá hệ thống và lỗi do nhân viên.",
+      "explanation": "Không chỉ test happy case; cần chuẩn bị backup, recover, rollback hoặc thông báo lỗi.",
+      "citations": [
+        "[T03-142]",
+        "[T03-143]"
+      ]
+    },
+    {
+      "statement": "Thông tin nhạy cảm có thể được bảo vệ bằng censor, chỉ xử lý feature, không lưu dữ liệu thật hoặc chỉ cho hệ thống đọc mà không đẩy dữ liệu ra ngoài.",
+      "explanation": "Mức bảo vệ cụ thể phụ thuộc vào thỏa thuận với khách hàng và quy tắc bảo mật của tổ chức.",
+      "citations": [
+        "[T03-138]",
+        "[T03-139]",
+        "[T03-140]"
+      ]
+    },
+    {
+      "statement": "Chaining xử lý các bước nối tiếp; routing chọn nhánh xử lý; parallel chạy các luồng độc lập đồng thời.",
+      "explanation": "Chaining phù hợp khi cần lần lượt lấy và tổng hợp dữ liệu, routing phù hợp khi phân loại yêu cầu, còn parallel phù hợp khi các tác vụ không phụ thuộc nhau.",
+      "citations": [
+        "[T03-131]",
+        "[T03-132]",
+        "[T03-133]"
+      ]
+    },
+    {
+      "statement": "Chạy song song có thể giảm thời gian nhưng làm tăng yêu cầu bộ nhớ và chi phí hạ tầng.",
+      "explanation": "Số luồng song song phải được thống nhất với MLOps theo khả năng máy chủ và ngân sách.",
+      "citations": [
+        "[T03-133]"
+      ]
+    },
+    {
+      "statement": "UI cần giúp người dùng nhận biết kết quả hoặc lỗi; UX cần làm cho việc tương tác và lựa chọn trở nên dễ dàng.",
+      "explanation": "Thông báo rõ ràng, lựa chọn bằng click và quy trình feedback ngắn giúp giảm gánh nặng cho người dùng.",
+      "citations": [
+        "[T03-125]",
+        "[T03-126]"
+      ]
+    },
+    {
+      "statement": "Khi dùng log hoặc câu trả lời cũ để fallback, phải thông báo nguồn, thời điểm và khả năng không còn phù hợp.",
+      "explanation": "Hai câu hỏi giống nhau về mặt chữ vẫn có thể khác lĩnh vực hoặc khác yêu cầu thực tế.",
+      "citations": [
+        "[T03-127]"
+      ]
+    },
+    {
+      "statement": "Các hành động ảnh hưởng đến thế giới thật như gửi email, chuyển tiền hoặc ký hợp đồng nên có bước phê duyệt của con người.",
+      "explanation": "Human-in-the-loop giúp kiểm soát các hành động có rủi ro trước khi chúng được thực hiện.",
+      "citations": [
+        "[T03-130]"
+      ]
+    },
+    {
+      "statement": "Rule script có tính cố định và giới hạn phạm vi; LLM linh hoạt hơn nhưng không chắc chắn; agent kết hợp cả hai.",
+      "explanation": "Agent có thể dùng tool để tạo phần deterministic nhưng vẫn có phần xác suất khi gọi LLM hoặc thuật toán học sâu.",
+      "citations": [
+        "[T03-128]"
+      ]
+    },
+    {
+      "statement": "Một hệ thống phải xác định rõ điều kiện vận hành và không nên hứa hẹn hoạt động hoàn hảo ngoài scope.",
+      "explanation": "Ví dụ hệ thống xe hoặc ứng dụng cần nêu điều kiện về cảm biến, kết nối hoặc môi trường để người dùng hiểu giới hạn.",
+      "citations": [
+        "[T03-097]",
+        "[T03-107]"
+      ]
+    },
+    {
+      "statement": "Rủi ro có xác suất thấp nhưng severity rất cao vẫn cần được nhận diện, báo cáo và xử lý sớm.",
+      "explanation": "Tình huống Cruise cho thấy một scenario hiếm nhưng hậu quả nghiêm trọng có thể dẫn đến tổn thất rất lớn.",
+      "citations": [
+        "[T03-112]",
+        "[T03-116]"
+      ]
+    }
+  ],
+  "examples": [
+    {
+      "scenario": "Lập kế hoạch du lịch cho gia đình tại Nha Trang",
+      "lesson": "Bài toán có nhiều người dùng, địa điểm, thời gian, sở thích và khoảng cách nên cần state graph, graph traversal hoặc phương pháp tìm kiếm phù hợp; không nên chỉ dựa vào LLM thuần túy.",
+      "citations": [
+        "[T03-024]",
+        "[T03-030]"
+      ]
+    },
+    {
+      "scenario": "Đếm chữ R trong từ “strawberry”",
+      "lesson": "LLM nên nhận diện ý định và tham số, sau đó gọi function Python để đếm ký tự nhằm tạo kết quả chắc chắn hơn.",
+      "citations": [
+        "[T03-034]",
+        "[T03-079]"
+      ]
+    },
+    {
+      "scenario": "Sinh đề toán biến thể",
+      "lesson": "Biểu diễn bài toán bằng công thức và thay đổi các tham số theo quan hệ đã biết; LLM chỉ paraphrase bối cảnh, không được giao việc tự thay đổi số một cách không kiểm chứng.",
+      "citations": [
+        "[T03-074]",
+        "[T03-075]"
+      ]
+    },
+    {
+      "scenario": "Chatbot trả lời quy tắc nội bộ công ty",
+      "lesson": "Cần RAG để truy xuất tài liệu nội bộ và đưa nội dung liên quan vào ngữ cảnh trả lời.",
+      "citations": [
+        "[T03-036]"
+      ]
+    },
+    {
+      "scenario": "Đo độ lệch tấm xe bằng camera điện thoại",
+      "lesson": "Cần constraint về góc cầm điện thoại, khung UI, gyroscope và tag định vị để giảm tự do đầu vào và tính khoảng cách hình học đáng tin cậy hơn.",
+      "citations": [
+        "[T03-108]"
+      ]
+    },
+    {
+      "scenario": "Xe tự hành gặp vật thể bất ngờ rơi xuống đường",
+      "lesson": "Không chỉ xét happy case; cần nhận diện scenario hiếm, bổ sung sensor hoặc safety mechanism và đánh giá xác suất cùng severity.",
+      "citations": [
+        "[T03-112]",
+        "[T03-115]",
+        "[T03-116]"
+      ]
+    },
+    {
+      "scenario": "Chatbot dùng câu trả lời cũ khi model chính bị sập",
+      "lesson": "Có thể dùng log tương đồng làm fallback nhưng phải cảnh báo rằng câu trả lời dựa trên log cũ và có thể không phù hợp hoàn toàn.",
+      "citations": [
+        "[T03-019]",
+        "[T03-127]"
+      ]
+    },
+    {
+      "scenario": "Robot hoặc chatbot thực hiện hành động có ảnh hưởng thật",
+      "lesson": "Các hành động như gửi email, chuyển tiền hoặc ký hợp đồng cần ràng buộc và human approval.",
+      "citations": [
+        "[T03-090]",
+        "[T03-130]"
+      ]
+    },
+    {
+      "scenario": "Hệ thống chatbot truy vấn kho hàng sau khi database đổi schema",
+      "lesson": "Cần kiểm thử schema trước khi deploy; nếu lỗi xảy ra thì báo người dùng, khoanh vùng lỗi và cập nhật API hoặc function tương ứng.",
+      "citations": [
+        "[T03-123]",
+        "[T03-124]"
+      ]
+    },
+    {
+      "scenario": "Hệ thống xử lý camera CCTV có dữ liệu khuôn mặt",
+      "lesson": "Dữ liệu nhạy cảm cần được censor hoặc xử lý theo cách không để kỹ sư truy cập trực tiếp dữ liệu thật.",
+      "citations": [
+        "[T03-138]",
+        "[T03-140]"
+      ]
+    }
+  ],
+  "comparisons": [
+    {
+      "concept_a": "AI Engineer",
+      "concept_b": "MLOps",
+      "difference": "AI Engineer tối ưu kỹ thuật và luồng xử lý để tạo kết quả AI tốt; MLOps triển khai kết quả đó lên hệ thống thực tế, lo hạ tầng, scale, chi phí, latency, lưu trữ và backup.",
+      "citations": [
+        "[T03-014]",
+        "[T03-015]"
+      ]
+    },
+    {
+      "concept_a": "MLOps",
+      "concept_b": "AI PM",
+      "difference": "MLOps giải quyết cách triển khai và vận hành hệ thống; AI PM chuyển yêu cầu giữa khách hàng và kỹ sư, nhìn tổng thể rủi ro, giới hạn và mục tiêu dự án.",
+      "citations": [
+        "[T03-015]",
+        "[T03-016]",
+        "[T03-017]"
+      ]
+    },
+    {
+      "concept_a": "LLM",
+      "concept_b": "Tool/function code",
+      "difference": "LLM tạo câu trả lời theo mô hình xác suất và có thể không chắc chắn; tool hoặc function code xử lý phần logic, tính toán hoặc truy xuất đã được xác định theo cách deterministic hơn.",
+      "citations": [
+        "[T03-078]",
+        "[T03-079]"
+      ]
+    },
+    {
+      "concept_a": "RAG",
+      "concept_b": "Fine-tuning",
+      "difference": "RAG đưa tài liệu liên quan vào ngữ cảnh khi truy vấn; fine-tuning điều chỉnh model bằng dữ liệu huấn luyện chuyên biệt, đòi hỏi dữ liệu và validate, đồng thời có thể làm giảm generalization.",
+      "citations": [
+        "[T03-036]",
+        "[T03-119]"
+      ]
+    },
+    {
+      "concept_a": "Chaining",
+      "concept_b": "Routing",
+      "difference": "Chaining nối nhiều bước xử lý theo trình tự; routing phân loại yêu cầu rồi chọn một nhánh xử lý phù hợp.",
+      "citations": [
+        "[T03-131]",
+        "[T03-132]"
+      ]
+    },
+    {
+      "concept_a": "Routing",
+      "concept_b": "Parallel",
+      "difference": "Routing chọn một hoặc một số nhánh dựa trên loại yêu cầu; parallel chạy nhiều tác vụ độc lập đồng thời.",
+      "citations": [
+        "[T03-132]",
+        "[T03-133]"
+      ]
+    },
+    {
+      "concept_a": "Rule script",
+      "concept_b": "Agent",
+      "difference": "Rule script dùng quy tắc cố định, phạm vi hẹp và không tự thích ứng; agent kết hợp rule hoặc tool với LLM hay thuật toán xác suất nên linh hoạt hơn nhưng vẫn có phần không chắc chắn.",
+      "citations": [
+        "[T03-128]"
+      ]
+    },
+    {
+      "concept_a": "UI",
+      "concept_b": "UX",
+      "difference": "UI là phần người dùng nhìn thấy, gồm cách hiển thị kết quả và lỗi; UX là trải nghiệm tương tác, gồm cách người dùng lựa chọn và hoàn thành tác vụ.",
+      "citations": [
+        "[T03-125]",
+        "[T03-126]"
+      ]
+    },
+    {
+      "concept_a": "Scope",
+      "concept_b": "ODD",
+      "difference": "Scope là phạm vi và điều kiện hệ thống được thiết kế để thực hiện; ODD là thuật ngữ chỉ miền tình huống vận hành mà hệ thống được bảo đảm hoạt động tốt.",
+      "citations": [
+        "[T03-097]",
+        "[T03-105]"
+      ]
+    }
+  ],
+  "misconceptions": [
+    {
+      "incorrect_belief": "Chỉ cần prompt đủ tốt thì LLM có thể giải quyết mọi bài toán.",
+      "correction": "Nếu người dùng không có kiến thức lĩnh vực để đánh giá kết quả, chất lượng phụ thuộc vào may mắn; cần xác định giới hạn của LLM và bổ sung tool hoặc phương pháp khác khi cần.",
+      "citations": [
+        "[T03-008]",
+        "[T03-033]"
+      ]
+    },
+    {
+      "incorrect_belief": "Dùng LLM trong một hệ thống nghĩa là chỉ được dùng riêng LLM.",
+      "correction": "Có thể kết hợp LLM với database, graph, API, function code, RAG, logic deterministic và các công cụ khác.",
+      "citations": [
+        "[T03-028]",
+        "[T03-059]"
+      ]
+    },
+    {
+      "incorrect_belief": "Một bài toán lập kế hoạch du lịch chỉ cần nhập yêu cầu vào LLM.",
+      "correction": "Bài toán có thể thuộc về duyệt đồ thị, tìm kiếm tối ưu hoặc mô hình xác suất; cần biểu diễn trạng thái và sử dụng phương pháp phù hợp.",
+      "citations": [
+        "[T03-030]",
+        "[T03-033]"
+      ]
+    },
+    {
+      "incorrect_belief": "LLM luôn trả lời ổn định vì cùng là phép tính hoặc cùng một loại câu hỏi.",
+      "correction": "LLM có thể trả lời đúng một input nhưng sai input khác dù bản chất toán học tương tự; phần cần chắc chắn nên dùng công thức hoặc function.",
+      "citations": [
+        "[T03-078]"
+      ]
+    },
+    {
+      "incorrect_belief": "Có thể để LLM tự thay đổi số trong đề toán rồi tin rằng đáp án luôn đúng.",
+      "correction": "Phần thay đổi số cần dựa trên công thức và quan hệ biến số deterministic; LLM phù hợp hơn với việc paraphrase đề.",
+      "citations": [
+        "[T03-074]",
+        "[T03-075]"
+      ]
+    },
+    {
+      "incorrect_belief": "Fine-tuning luôn tốt hơn RAG cho chatbot chuyên ngành.",
+      "correction": "Fine-tuning tốn công sức, cần dữ liệu và validate; với nhiều chatbot, RAG và prompt engineering có thể phù hợp hơn, tùy tình huống.",
+      "citations": [
+        "[T03-119]"
+      ]
+    },
+    {
+      "incorrect_belief": "Chỉ cần test các happy case là đủ.",
+      "correction": "AI system phải được test cả khi từng bộ phận, nhiều bộ phận hoặc toàn bộ hệ thống hỏng, khi người dùng cố tình phá và khi có lỗi bên ngoài hoặc do nhân viên.",
+      "citations": [
+        "[T03-142]",
+        "[T03-143]"
+      ]
+    },
+    {
+      "incorrect_belief": "Nếu hệ thống có lỗi thì cứ để người dùng tiếp tục thử trong cùng một luồng.",
+      "correction": "Cần báo lỗi, khoanh vùng phần hỏng, tạm dừng luồng hoặc chuyển người dùng sang session mới để lỗi không lan rộng.",
+      "citations": [
+        "[T03-124]"
+      ]
+    },
+    {
+      "incorrect_belief": "Rủi ro có xác suất rất thấp thì không cần quan tâm.",
+      "correction": "Nếu severity rất cao, rủi ro xác suất thấp vẫn cần được nhận diện, báo cáo và xử lý sớm.",
+      "citations": [
+        "[T03-116]"
+      ]
+    },
+    {
+      "incorrect_belief": "Khi cấp quyền cho AI, chỉ cần tin rằng AI sẽ làm đúng yêu cầu.",
+      "correction": "Các hành động ảnh hưởng đến thế giới thật cần rule, lớp bảo mật, giới hạn quyền và human approval khi phù hợp.",
+      "citations": [
+        "[T03-090]",
+        "[T03-130]"
+      ]
+    },
+    {
+      "incorrect_belief": "Hệ thống phải hoạt động hoàn hảo trong mọi điều kiện.",
+      "correction": "Hệ thống cần xác định scope, constraint và ODD; phải nêu rõ điều kiện hoạt động và mức độ đáp ứng khi điều kiện không đủ.",
+      "citations": [
+        "[T03-097]",
+        "[T03-105]",
+        "[T03-107]"
+      ]
+    },
+    {
+      "incorrect_belief": "Chạy song song luôn tốt hơn chạy tuần tự.",
+      "correction": "Parallel có thể giảm thời gian nhưng làm tăng bộ nhớ, số tài nguyên và chi phí; cần cân nhắc khả năng hạ tầng cùng MLOps.",
+      "citations": [
+        "[T03-133]"
+      ]
+    }
+  ],
+  "metadata": {
+    "schema_version": 2,
+    "day": "day-2",
+    "source_transcript": "transcript-03-clean.md",
+    "model": "gpt-5.6-luna"
+  }
+}

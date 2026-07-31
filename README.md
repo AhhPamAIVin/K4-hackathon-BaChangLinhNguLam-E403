@@ -12,28 +12,63 @@
 3. Viết spec theo **`03-template-ai-spec.md`** — deliverable trung tâm của cả sự kiện.
 4. Đọc **`04-rubric.md`** ngay từ đầu — biết trước bài được chấm theo tiêu chí nào.
 
-| File / thư mục | Nội dung |
-|---|---|
-| `01-de-bai.md` | Đề bài 3 hướng · 5 tiêu chí nghiệm thu · ràng buộc chung |
-| `02-guide.md` | Hướng dẫn 5 giai đoạn: khám phá → spec → build → đo & validate → demo |
-| `03-template-ai-spec.md` | Template AI Spec (nộp tại **hạn chốt spec** — xem Lịch) |
-| `04-rubric.md` | Rubric 100 điểm (25 nộp checkpoint + 75 chấm bài) + checklist xác minh 6 mốc |
-| `frontend/` | Giao diện VLearn (Vite + React), đổi tên từ `clone-vlearn` |
-| `backend/` | FastAPI, hai tool hỏi đáp, pipeline xử lý và toàn bộ dữ liệu |
-| `backend/data/` | Dữ liệu thô đã ẩn danh và dữ liệu summary/embedding đã xử lý |
-| `tham-khao/` | JTBD Playbook (PDF) + worksheet JTBD đầy đủ — đọc khi muốn đào sâu |
+| File / thư mục           | Nội dung                                                                     |
+| ------------------------ | ---------------------------------------------------------------------------- |
+| `01-de-bai.md`           | Đề bài 3 hướng · 5 tiêu chí nghiệm thu · ràng buộc chung                     |
+| `02-guide.md`            | Hướng dẫn 5 giai đoạn: khám phá → spec → build → đo & validate → demo        |
+| `03-template-ai-spec.md` | Template AI Spec (nộp tại **hạn chốt spec** — xem Lịch)                      |
+| `04-rubric.md`           | Rubric 100 điểm (25 nộp checkpoint + 75 chấm bài) + checklist xác minh 6 mốc |
+| `codebase/frontend/`     | Giao diện VLearn (Vite + React), đổi tên từ `clone-vlearn`                   |
+| `codebase/backend/`      | FastAPI, hai tool hỏi đáp, pipeline xử lý và toàn bộ dữ liệu                 |
+| `codebase/backend/data/` | Dữ liệu thô đã ẩn danh và dữ liệu summary/embedding đã xử lý                 |
+| `tham-khao/`             | JTBD Playbook (PDF) + worksheet JTBD đầy đủ — đọc khi muốn đào sâu           |
+
+## Thông tin nhóm và phân công
+
+> Điền thông tin thật trước khi nộp. Không để NotebookLM tự sinh tên hoặc mã
+> học viên.
+
+| Mã học viên   | Họ tên          | Phần phụ trách                           | Artifact giải thích tại CP5/CP6            |
+| ------------- | --------------- | ---------------------------------------- | ------------------------------------------ |
+| `2A202601072` | `Phạm Tuấn Anh` | Product/spec/evidence/fetureQuiz/Backend | `spec.md`, `evidence/`,`codebase/backend/` |
+| `2A2026`      | `Đào Bình Minh` | Lead/RAG/eval/demo                       | `codebase/backend/`, `eval/`               |
+| `2A2026`      | `[Điền]`        | Frontend/UX/Validation                   | `codebase/frontend/`,`demo-slides.pdf`     |
+
+## Chạy prototype
+
+Mở hai terminal tại thư mục gốc.
+
+Backend:
+
+```powershell
+.\.venv\Scripts\Activate.ps1
+Set-Location codebase
+uvicorn backend.app.main:app --reload
+```
+
+Frontend:
+
+```powershell
+Set-Location codebase/frontend
+npm install
+npm run dev
+```
+
+- Giao diện: `http://localhost:5173`
+- API docs: `http://127.0.0.1:8000/docs`
+- Health check: `http://127.0.0.1:8000/health`
 
 ## Lịch — 6 mốc
 
-| Mốc | Khoá 3 | Khoá 4 |
-|---|---|---|
-| Khai mạc + phát đề | 09:00 ngày 1 | 14:00 ngày 1 |
-| CP1 · Chốt Canvas | 10:00 ngày 1 | 15:00 ngày 1 |
-| CP2 · Show được thứ bấm được | 12:00 ngày 1 | 17:00 ngày 1 |
-| CP3 · AI chạy thật + đo lượt đầu | 16:00 ngày 1 | 10:30 ngày 2 |
-| CP4 · Chốt tiến độ | 17:30 ngày 1 | 12:00 ngày 2 |
+| Mốc                                   | Khoá 3       | Khoá 4       |
+| ------------------------------------- | ------------ | ------------ |
+| Khai mạc + phát đề                    | 09:00 ngày 1 | 14:00 ngày 1 |
+| CP1 · Chốt Canvas                     | 10:00 ngày 1 | 15:00 ngày 1 |
+| CP2 · Show được thứ bấm được          | 12:00 ngày 1 | 17:00 ngày 1 |
+| CP3 · AI chạy thật + đo lượt đầu      | 16:00 ngày 1 | 10:30 ngày 2 |
+| CP4 · Chốt tiến độ                    | 17:30 ngày 1 | 12:00 ngày 2 |
 | CP5 · Xác minh + validation + dry run | 09:00 ngày 2 | 14:00 ngày 2 |
-| CP6 · Demo | 10:00 ngày 2 | 15:00 ngày 2 |
+| CP6 · Demo                            | 10:00 ngày 2 | 15:00 ngày 2 |
 
 **Hạn chốt spec.md** (quality bar khoá từ thời điểm này, mỗi khoá theo lịch của mình): **Khoá 3 — 23:59 ngày 1** · **Khoá 4 — 12:00 ngày 2** (ngay tại CP4).
 
@@ -62,15 +97,15 @@ Tổng **100 điểm = 25 điểm nộp checkpoint + 75 điểm chấm bài nộ
 
 **75 điểm chấm — trên artifact trong repo, mỗi con điểm trỏ về một file:**
 
-| Khối | Điểm | Chấm trên file nào |
-|---|---|---|
-| R1 · Bằng chứng & impact | 15 | `spec.md` §1-§2 + log khảo sát/mining |
-| R2 · Lát cắt & thiết kế | 15 | `spec.md` §4 |
-| R3 · Chỗ khó & kịch bản rủi ro | 11 | `spec.md` §5-§6 |
-| R4 · Kiểm thử | 15 | `spec.md` §7 + `eval/` |
-| R5 · Prototype chạy được | 8 | `codebase/` + demo |
-| R6 · Validation với user | 8 | `validation/` |
-| R7 · Quy trình & repo | 3 | cấu trúc repo |
+| Khối                           | Điểm | Chấm trên file nào                    |
+| ------------------------------ | ---- | ------------------------------------- |
+| R1 · Bằng chứng & impact       | 15   | `spec.md` §1-§2 + log khảo sát/mining |
+| R2 · Lát cắt & thiết kế        | 15   | `spec.md` §4                          |
+| R3 · Chỗ khó & kịch bản rủi ro | 11   | `spec.md` §5-§6                       |
+| R4 · Kiểm thử                  | 15   | `spec.md` §7 + `eval/`                |
+| R5 · Prototype chạy được       | 8    | `codebase/` + demo                    |
+| R6 · Validation với user       | 8    | `validation/`                         |
+| R7 · Quy trình & repo          | 3    | cấu trúc repo                         |
 
 Ba điều nên biết trước khi làm:
 
@@ -88,7 +123,7 @@ Ba điều nên biết trước khi làm:
 
 ## Bảo mật dữ liệu được cung cấp
 
-Dữ liệu trong `backend/data/` là dữ liệu thật của khoá học (đã ẩn danh), cấp riêng cho hackathon này. Khi nhận data, nhóm cam kết:
+Dữ liệu trong `codebase/backend/data/` là dữ liệu thật của khoá học (đã ẩn danh), cấp riêng cho hackathon này. Khi nhận data, nhóm cam kết:
 
 1. **Chỉ dùng trong phạm vi hackathon** — cho việc tìm bằng chứng, xây golden set và build prototype. Không dùng cho mục đích khác.
 2. **Không chia sẻ ra ngoài khoá học** — không đăng lên mạng xã hội, không gửi cho người ngoài, không đưa vào bất kỳ dataset hay repo công khai nào.
