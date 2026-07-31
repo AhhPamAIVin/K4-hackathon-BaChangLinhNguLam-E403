@@ -31,8 +31,8 @@
 | Mã học viên   | Họ tên          | Phần phụ trách                           | Artifact giải thích tại CP5/CP6            |
 | ------------- | --------------- | ---------------------------------------- | ------------------------------------------ |
 | `2A202601072` | `Phạm Tuấn Anh` | Product/spec/evidence/fetureQuiz/Backend | `spec.md`, `evidence/`,`codebase/backend/` |
-| `2A2026`      | `Đào Bình Minh` | Lead/RAG/eval/demo                       | `codebase/backend/`, `eval/`               |
-| `2A2026`      | `[Điền]`        | Frontend/UX/Validation                   | `codebase/frontend/`,`demo-slides.pdf`     |
+| `2A202601364` | `Đào Bình Minh` | Lead/RAG/eval/demo                       | `codebase/backend/`, `eval/`               |
+| `2A202601024` | `Ngô Trọng Bảo` | Frontend/UX/Validation                   | `codebase/frontend/`,`demo-slides.pdf`     |
 
 ## Chạy prototype
 
