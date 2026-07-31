@@ -5,5 +5,4 @@ __pycache__/
 *.py[cod]
 *.env
 __pycache__/
-data/embedding_cache.json
-quiz-output/
+backend/data/processed/embeddings/vectors.jsonl

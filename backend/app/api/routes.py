@@ -23,10 +23,14 @@ router = APIRouter()
 
 @router.get("/health", response_model=HealthResponse, tags=["system"])
 def health() -> HealthResponse:
+    transcript_knowledge = get_transcript_knowledge_base()
     return HealthResponse(
         status="ok",
-        transcript_count=len(get_transcript_knowledge_base().documents),
+        transcript_count=len(transcript_knowledge.documents),
         summary_count=len(get_summary_knowledge_base().summaries),
+        chunk_count=len(transcript_knowledge.records),
+        vector_count=transcript_knowledge.vector_count,
+        embedding_ready=transcript_knowledge.embedding_ready,
     )
 
 

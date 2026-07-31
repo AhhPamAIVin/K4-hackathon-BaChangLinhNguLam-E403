@@ -1,4 +1,5 @@
 import json
+import math
 import re
 from dataclasses import dataclass
 from pathlib import Path
@@ -10,6 +11,14 @@ SEGMENT_RE = re.compile(
     re.DOTALL,
 )
 TOKEN_RE = re.compile(r"[a-z0-9\u00c0-\u024f]+", re.IGNORECASE)
+DAY_BY_SOURCE = {
+    "transcript-04-clean.md": "day-1",
+    "transcript-06-clean.md": "day-1",
+    "transcript-01-clean.md": "day-2",
+    "transcript-02-clean.md": "day-2",
+    "transcript-03-clean.md": "day-2",
+    "transcript-05-clean.md": "day-2",
+}
 
 
 def tokenize(text: str) -> set[str]:
@@ -35,13 +44,40 @@ def rank(query: str, records: list[dict], top_k: int) -> list[dict]:
     return [record for _, record in scored[:top_k]]
 
 
+def cosine_similarity(left: list[float], right: list[float]) -> float:
+    if not left or len(left) != len(right):
+        return 0.0
+    dot = sum(a * b for a, b in zip(left, right))
+    left_norm = math.sqrt(sum(value * value for value in left))
+    right_norm = math.sqrt(sum(value * value for value in right))
+    if not left_norm or not right_norm:
+        return 0.0
+    return dot / (left_norm * right_norm)
+
+
+def load_jsonl(path: Path | None) -> list[dict]:
+    if path is None or not path.is_file():
+        return []
+    return [
+        json.loads(line)
+        for line in path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+
+
 @dataclass
 class TranscriptKnowledgeBase:
     transcript_dir: Path
+    chunk_index: Path | None = None
+    vector_index: Path | None = None
 
     def __post_init__(self) -> None:
         self.records: list[dict] = []
         self.documents: dict[str, str] = {}
+        slides_dir = self.transcript_dir.parent / "slides"
+        self.slide_sources = {
+            path.name for path in slides_dir.glob("*.pdf") if path.is_file()
+        }
         for path in sorted(self.transcript_dir.glob("transcript-*-clean.md")):
             content = path.read_text(encoding="utf-8")
             self.documents[path.name] = content
@@ -51,21 +87,87 @@ class TranscriptKnowledgeBase:
                     self.records.append(
                         {
                             "citation": citation,
+                            "citations": [citation],
                             "source": path.name,
+                            "day": DAY_BY_SOURCE.get(path.name),
                             "text": cleaned,
                         }
                     )
+        chunks = load_jsonl(self.chunk_index)
+        vectors = {
+            record["id"]: record["embedding"]
+            for record in load_jsonl(self.vector_index)
+            if isinstance(record.get("embedding"), list)
+        }
+        if chunks:
+            self.records = [
+                {
+                    "id": chunk["id"],
+                    "citation": (
+                        chunk["metadata"].get("citation_ids") or ["unknown"]
+                    )[0],
+                    "citations": chunk["metadata"].get("citation_ids", []),
+                    "source": chunk["metadata"]["source"],
+                    "day": chunk["metadata"].get("day"),
+                    "text": chunk["text"],
+                    "embedding": vectors.get(chunk["id"]),
+                    "metadata": chunk["metadata"],
+                }
+                for chunk in chunks
+            ]
+        self.vector_count = sum(
+            1 for record in self.records if record.get("embedding")
+        )
+        self.has_embeddings = self.vector_count > 0
+        self.embedding_ready = (
+            bool(self.records) and self.vector_count == len(self.records)
+        )
 
-    def search(self, query: str, top_k: int = 6) -> list[dict]:
-        return rank(query, self.records, top_k)
+    def search(
+        self,
+        query: str,
+        top_k: int = 6,
+        query_embedding: list[float] | None = None,
+        day: str | None = None,
+    ) -> list[dict]:
+        candidates = [
+            record
+            for record in self.records
+            if day is None or record.get("day") == day
+        ]
+        if query_embedding and self.has_embeddings:
+            query_tokens = tokenize(query)
+            scored: list[tuple[float, dict]] = []
+            for record in candidates:
+                embedding = record.get("embedding")
+                if not embedding:
+                    continue
+                semantic = cosine_similarity(query_embedding, embedding)
+                lexical = len(query_tokens & tokenize(record["text"])) / max(
+                    len(query_tokens),
+                    1,
+                )
+                scored.append((semantic * 0.8 + lexical * 0.2, record))
+            scored.sort(key=lambda item: item[0], reverse=True)
+            return [record for _, record in scored[:top_k]]
+        return rank(query, candidates, top_k)
 
-    def validate_selection(self, text: str, source: str) -> bool:
+    def validate_selection(
+        self,
+        text: str,
+        source: str,
+        page: int | None = None,
+    ) -> bool:
         document = self.documents.get(source)
-        if not document:
-            return False
         normalized_text = " ".join(text.casefold().split())
-        normalized_document = " ".join(document.casefold().split())
-        return bool(normalized_text) and normalized_text in normalized_document
+        if not normalized_text:
+            return False
+        if document:
+            normalized_document = " ".join(document.casefold().split())
+            return normalized_text in normalized_document
+        # PDF selection đến từ text layer của đúng slide nội bộ. Không dùng
+        # selection này làm citation; nó chỉ là context bổ sung cho câu hỏi.
+        return source in self.slide_sources and page is not None
 
 
 @dataclass

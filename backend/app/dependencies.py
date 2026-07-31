@@ -17,7 +17,12 @@ def get_settings() -> Settings:
 
 @lru_cache
 def get_transcript_knowledge_base() -> TranscriptKnowledgeBase:
-    return TranscriptKnowledgeBase(get_settings().transcript_dir)
+    settings = get_settings()
+    return TranscriptKnowledgeBase(
+        settings.transcript_dir,
+        settings.chunk_index,
+        settings.vector_index,
+    )
 
 
 @lru_cache
@@ -36,4 +41,4 @@ def get_direct_qa_agent() -> DirectQAAgent:
 
 
 def get_study_agent() -> StudyAgent:
-    return StudyAgent(get_summary_knowledge_base(), get_openai_service())
+    return StudyAgent(get_transcript_knowledge_base(), get_openai_service())

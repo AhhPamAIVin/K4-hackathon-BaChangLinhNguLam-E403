@@ -69,6 +69,11 @@ def test_health_reports_loaded_knowledge() -> None:
     assert response.status_code == 200
     assert response.json()["transcript_count"] == 6
     assert response.json()["summary_count"] == 6
+    assert response.json()["chunk_count"] > 0
+    assert response.json()["vector_count"] >= 0
+    assert response.json()["embedding_ready"] is (
+        response.json()["vector_count"] == response.json()["chunk_count"]
+    )
 
 
 def test_direct_chat_contract() -> None:

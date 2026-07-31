@@ -40,6 +40,15 @@ class AgentAnswer(ApiModel):
     answer: str
     citations: list[Citation]
     suggested_questions: list[str]
+    blocked: bool = False
+    guardrail_code: Literal[
+        "scope",
+        "prompt_injection",
+        "privacy",
+        "unsafe",
+        "ambiguous",
+    ] | None = None
+    needs_clarification: bool = False
 
 
 class QuizRequest(ApiModel):
@@ -83,3 +92,6 @@ class HealthResponse(ApiModel):
     status: Literal["ok"]
     transcript_count: int
     summary_count: int
+    chunk_count: int
+    vector_count: int
+    embedding_ready: bool

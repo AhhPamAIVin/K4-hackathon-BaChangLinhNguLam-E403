@@ -1,13 +1,45 @@
 # VLearn AI Backend
 
-FastAPI backend gồm hai agent:
+FastAPI backend gồm ba năng lực:
 
-1. `direct_qa`: hỏi đáp trực tiếp dựa trên transcript gốc.
-2. `study`: tạo quiz từ summary schema v2 và hỏi đáp ôn tập.
+1. `knowledge_qa`: hỏi đáp kiến thức thông thường từ transcript.
+2. `study_review`: hỏi đáp theo hướng ôn tập, chủ động nhớ lại và ghi nhớ.
+3. `generate_quiz`: tạo câu hỏi trắc nghiệm từ summary có cấu trúc.
 
-## Chuẩn bị
+## Cấu trúc
 
-Từ thư mục gốc:
+```text
+backend/
+├── app/
+│   ├── data_processing/
+│   │   ├── summarize.py          # transcript -> summary cho quiz
+│   │   ├── chunking.py           # chunk ~700 ký tự, overlap ~100
+│   │   └── build_embeddings.py   # metadata + OpenAI embeddings
+│   ├── tools/
+│   │   ├── knowledge_qa.py
+│   │   ├── study_review.py
+│   │   └── generate_quiz.py
+│   ├── api/
+│   ├── core/
+│   ├── models/
+│   └── services/
+├── data/
+│   ├── raw/vlearn-pack/
+│   └── processed/
+│       ├── summaries/
+│       └── embeddings/
+└── tests/
+```
+
+Summary và embedding là hai pipeline độc lập:
+
+- Summary giữ các learning objective, concept, ví dụ, so sánh, misconception
+  và citation để model tạo trắc nghiệm có căn cứ.
+- Embedding index giữ text chunk cùng `source`, `day`, `chunk_index`,
+  vị trí ký tự, citation IDs và content hash để phục vụ retrieval cho cả hai
+  tool hỏi đáp.
+
+## Cài đặt
 
 ```powershell
 python -m venv .venv
@@ -16,91 +48,54 @@ pip install -r backend/requirements.txt
 Copy-Item backend/.env.example .env
 ```
 
-Điền `OPENAI_API_KEY`. Trước khi dùng study agent:
+Điền `OPENAI_API_KEY` trong `.env`.
+
+## Xử lý dữ liệu
+
+Kiểm tra/tạo summary:
 
 ```powershell
-python feature/question/process_data.py
+python -m backend.app.data_processing.summarize --check
+python -m backend.app.data_processing.summarize
 ```
 
-## Chạy
+Tạo chunk + metadata mà chưa gọi API:
+
+```powershell
+python -m backend.app.data_processing.build_embeddings --chunks-only
+```
+
+Tạo cả chunk và vector:
+
+```powershell
+python -m backend.app.data_processing.build_embeddings
+```
+
+Mặc định dùng chunk 700 ký tự, overlap 100 ký tự. Có thể tune bằng
+`--target-chars` và `--overlap-chars`.
+
+## Model mặc định
+
+- Sinh câu trả lời, summary và quiz: `gpt-5.6-luna`, reasoning `low`.
+- Embedding: `text-embedding-3-small`, 1024 chiều.
+
+Đây là cấu hình ưu tiên tốc độ/chi phí cho workload học liệu khối lượng lớn.
+Có thể đổi riêng từng tác vụ qua `OPENAI_BACKEND_MODEL`,
+`OPENAI_SUMMARY_MODEL`, `OPENAI_QUIZ_MODEL`, `OPENAI_EMBEDDING_MODEL`,
+`OPENAI_EMBEDDING_DIMENSIONS` và `OPENAI_REASONING_EFFORT`.
+
+## Chạy và test
 
 ```powershell
 uvicorn backend.app.main:app --reload
+pytest backend/tests -q
 ```
 
 - API docs: `http://127.0.0.1:8000/docs`
 - Health check: `http://127.0.0.1:8000/health`
 
-## Test
-
-Test dùng fake agent, không gọi OpenAI:
-
-```powershell
-pip install -r backend/requirements-dev.txt
-pytest backend/tests -q
-```
-
 ## API
 
-### Hỏi đáp trực tiếp
-
-`POST /api/v1/agents/direct-qa/chat`
-
-```json
-{
-  "message": "Attention hoạt động như thế nào?",
-  "history": []
-}
-```
-
-Có thể truyền thêm đoạn người học bôi đen:
-
-```json
-{
-  "message": "Giải thích đoạn này dễ hiểu hơn",
-  "history": [],
-  "selection": {
-    "text": "Nội dung có thật trong transcript...",
-    "source": "transcript-04-clean.md",
-    "page": null
-  }
-}
-```
-
-### Tạo quiz
-
-`POST /api/v1/agents/study/quiz`
-
-```json
-{
-  "request": "Tạo 5 câu ngày 1, mức độ từ dễ đến khó"
-}
-```
-
-### Hỏi đáp ôn tập
-
-`POST /api/v1/agents/study/review`
-
-```json
-{
-  "message": "So sánh augment và automate để mình ôn lại",
-  "day": "day-2",
-  "history": []
-}
-```
-
-## Cấu trúc
-
-```text
-backend/
-├── app/
-│   ├── agents/       # logic hai agent
-│   ├── api/          # FastAPI routes
-│   ├── core/         # settings
-│   ├── models/       # request/response schemas
-│   ├── services/     # knowledge base và OpenAI
-│   ├── dependencies.py
-│   └── main.py
-├── tests/
-└── requirements.txt
-```
+- `POST /api/v1/agents/direct-qa/chat`
+- `POST /api/v1/agents/study/review`
+- `POST /api/v1/agents/study/quiz`

@@ -24,17 +24,23 @@ def load_env_file(path: Path) -> None:
 @dataclass(frozen=True)
 class Settings:
     project_root: Path
+    data_dir: Path
     transcript_dir: Path
     summary_dir: Path
     summary_index: Path
+    chunk_index: Path
+    vector_index: Path
     openai_model: str
+    quiz_model: str
+    summary_model: str
+    embedding_model: str
+    embedding_dimensions: int
     reasoning_effort: str
     cors_origins: tuple[str, ...]
 
     @classmethod
     def from_env(cls) -> "Settings":
         load_env_file(PROJECT_ROOT / ".env")
-        load_env_file(PROJECT_ROOT / "feature" / "question" / ".env")
         origins = tuple(
             origin.strip()
             for origin in os.getenv(
@@ -43,15 +49,26 @@ class Settings:
             ).split(",")
             if origin.strip()
         )
-        output_dir = PROJECT_ROOT / "feature" / "question" / "output"
+        data_dir = BACKEND_DIR / "data"
+        processed_dir = data_dir / "processed"
+        default_model = os.getenv("OPENAI_MODEL", "gpt-5.6-luna")
         return cls(
             project_root=PROJECT_ROOT,
-            transcript_dir=PROJECT_ROOT / "data" / "vlearn-pack" / "transcript",
-            summary_dir=output_dir / "summaries",
-            summary_index=output_dir / "summary-index.json",
-            openai_model=os.getenv(
-                "OPENAI_BACKEND_MODEL",
-                os.getenv("OPENAI_MODEL", "gpt-5.6-luna"),
+            data_dir=data_dir,
+            transcript_dir=data_dir / "raw" / "vlearn-pack" / "transcript",
+            summary_dir=processed_dir / "summaries",
+            summary_index=processed_dir / "summary-index.json",
+            chunk_index=processed_dir / "embeddings" / "chunks.jsonl",
+            vector_index=processed_dir / "embeddings" / "vectors.jsonl",
+            openai_model=os.getenv("OPENAI_BACKEND_MODEL", default_model),
+            quiz_model=os.getenv("OPENAI_QUIZ_MODEL", default_model),
+            summary_model=os.getenv("OPENAI_SUMMARY_MODEL", default_model),
+            embedding_model=os.getenv(
+                "OPENAI_EMBEDDING_MODEL",
+                "text-embedding-3-small",
+            ),
+            embedding_dimensions=int(
+                os.getenv("OPENAI_EMBEDDING_DIMENSIONS", "1024")
             ),
             reasoning_effort=os.getenv("OPENAI_REASONING_EFFORT", "low"),
             cors_origins=origins,

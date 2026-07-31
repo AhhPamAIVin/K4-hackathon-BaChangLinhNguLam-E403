@@ -56,3 +56,17 @@ class OpenAIService:
         except json.JSONDecodeError as exc:
             raise RuntimeError("OpenAI trả về JSON không hợp lệ.") from exc
         return payload
+
+    def embed_query(self, text: str) -> list[float]:
+        if not os.getenv("OPENAI_API_KEY"):
+            raise RuntimeError("Thiếu OPENAI_API_KEY.")
+        try:
+            from openai import OpenAI
+        except ImportError as exc:
+            raise RuntimeError("Chưa cài package openai.") from exc
+        response = OpenAI().embeddings.create(
+            model=self.settings.embedding_model,
+            dimensions=self.settings.embedding_dimensions,
+            input=text,
+        )
+        return response.data[0].embedding
