@@ -6,7 +6,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-from embeddings import cosine_similarity, embed_chunks, get_embedding, load_cache, save_cache
+from embeddings import chunks_from_cache, cosine_similarity, embed_chunks, get_embedding, load_cache, save_cache
 
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8")
@@ -54,7 +54,7 @@ def chunk_text(text: str, source: str, chunk_type: str, page: int | None = None)
         cleaned = normalize_text(paragraph)
         if len(cleaned) < 40:
             continue
-        chunk_id = f"{source}#p{page}" if page is not None else f"{source}#chunk{index + 1}"
+        chunk_id = f"{source}#p{page}#{index}" if page is not None else f"{source}#chunk{index + 1}"
         chunks.append(
             {
                 "source": source,
@@ -401,9 +401,18 @@ def main() -> None:
 
     env = load_env(ENV_PATH)
     api_key = get_api_key(env)
+    # `documents` (raw text gốc) vẫn cần tải để validate_selection() đối chiếu đoạn bôi đen.
     documents = load_documents(TRANSCRIPT_DIR, SLIDES_DIR)
-    chunks = chunks_from_documents(documents)
+    live_chunks = chunks_from_documents(documents)
     cache = load_cache()
+    cached_chunks = chunks_from_cache(cache)
+
+    # Chỉ dùng cache làm nguồn truy hồi khi nó phủ đủ mọi chunk_id hiện có trong tài liệu gốc
+    # (đã chạy precompute_embeddings.py sau lần sửa doc gần nhất). Nếu thiếu -> cache đang lệch,
+    # dùng chunk sống từ tài liệu gốc để tránh trả lời dựa trên dữ liệu cũ/thiếu.
+    live_ids = {chunk["chunk_id"] for chunk in live_chunks}
+    cached_ids = {chunk["chunk_id"] for chunk in cached_chunks}
+    chunks = cached_chunks if live_ids and live_ids <= cached_ids else live_chunks
 
     if not chunks:
         print("Không tìm thấy dữ liệu transcript hoặc slide để xây chatbot.")

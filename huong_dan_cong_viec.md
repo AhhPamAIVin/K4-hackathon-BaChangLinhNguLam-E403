@@ -221,15 +221,7 @@ Output:
 - demo-ready prototype;
 - thư mục eval/ và validation/ đủ để chấm điểm.
 
----
 
-## Phân công cho nhóm 3 người
-
-- Người 1 — chatbot tutor: chịu trách nhiệm về prompt, retrieval, trích dẫn nguồn, golden set và chất lượng trả lời.
-- Người 2 — giao diện + backend: chịu trách nhiệm xây API, kết nối frontend với chatbot, và làm trải nghiệm học online.
-- Người 3 — AI tạo câu hỏi cuối bài giảng + tổng hợp lỗ hổng: chịu trách nhiệm sinh quiz và đưa ra phân tích cho giảng viên.
-
----
 
 ## Điều cần nhớ
 
