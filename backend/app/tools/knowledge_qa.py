@@ -109,9 +109,12 @@ class KnowledgeQATool:
         for record in records:
             for citation in record.get("citations", [record["citation"]]):
                 if citation != "selection":
-                    allowed[citation] = record["source"]
+                    allowed[citation] = {
+                        "source": record["source"],
+                        "excerpt": record["text"][:2000],
+                    }
         citations = [
-            Citation(id=citation, source=allowed[citation])
+            Citation(id=citation, **allowed[citation])
             for citation in dict.fromkeys(payload["citations"])
             if citation in allowed
         ]

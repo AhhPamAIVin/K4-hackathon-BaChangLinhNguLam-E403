@@ -123,6 +123,10 @@ sequenceDiagram
         User->>Panel: Chọn đáp án
         Panel-->>User: Đúng/sai + giải thích + citation
     end
+    Panel->>Panel: Nhóm câu sai theo learning objective
+    Panel-->>User: Điểm số + kiến thức còn hổng + phần đã nắm
+    User->>Panel: Chọn Ôn các phần còn hổng với AI
+    Panel->>Panel: Chuyển sang tab Ôn tập và điền sẵn nội dung
 ```
 
 ## Trạng thái lỗi chung

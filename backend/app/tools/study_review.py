@@ -88,12 +88,15 @@ class StudyReviewTool:
             ),
         )
         citation_sources = {
-            citation: record["source"]
+            citation: {
+                "source": record["source"],
+                "excerpt": record["text"][:2000],
+            }
             for record in records
             for citation in record.get("citations", [record["citation"]])
         }
         citations = [
-            Citation(id=citation, source=citation_sources[citation])
+            Citation(id=citation, **citation_sources[citation])
             for citation in dict.fromkeys(payload["citations"])
             if citation in citation_sources
         ]

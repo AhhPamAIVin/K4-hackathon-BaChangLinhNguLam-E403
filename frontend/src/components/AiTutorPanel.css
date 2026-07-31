@@ -329,6 +329,72 @@
   font-weight: 800;
 }
 
+.citation-chip.expandable {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.citation-chip.expandable svg {
+  transition: transform 0.18s ease;
+}
+
+.citation-chip.expandable.active svg {
+  transform: rotate(90deg);
+}
+
+.citation-preview {
+  margin-top: 8px;
+  padding: 10px;
+  border: 1px solid #bfdbfe;
+  border-radius: 10px;
+  background: #f8fbff;
+}
+
+.citation-preview-header {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid #dbeafe;
+  color: var(--brand-blue);
+}
+
+.citation-preview-header > div {
+  min-width: 0;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.citation-preview-header strong {
+  font-size: 9px;
+}
+
+.citation-preview-header span {
+  overflow: hidden;
+  color: var(--text-muted);
+  font-size: 8px;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.citation-preview-header button {
+  display: grid;
+  place-items: center;
+  color: var(--text-muted);
+}
+
+.citation-preview > p {
+  max-height: 180px;
+  overflow-y: auto;
+  margin-top: 8px;
+  color: var(--text-secondary);
+  font-size: 9px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+}
+
 .assistant-followups {
   display: flex;
   flex-direction: column;
@@ -752,10 +818,254 @@
   font-weight: 800;
 }
 
+.quiz-completion {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.completion-hero {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.score-ring {
+  width: 78px;
+  height: 78px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 0 0 auto;
+  border: 6px solid #bfdbfe;
+  background: var(--bg-card);
+}
+
+.score-ring.score-high {
+  border-color: #86efac;
+}
+
+.score-ring.score-mid {
+  border-color: #fde68a;
+}
+
+.score-ring.score-low {
+  border-color: #fdba74;
+}
+
+.score-ring strong {
+  font-size: 19px;
+  line-height: 1;
+}
+
+.score-ring span {
+  margin-top: 5px;
+  color: var(--text-muted);
+  font-size: 8px;
+  font-weight: 700;
+}
+
+.completion-eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #b45309;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.completion-hero h3 {
+  margin-top: 4px;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+
+.completion-hero p {
+  margin-top: 2px;
+  color: var(--text-muted);
+  font-size: 9px;
+}
+
+.knowledge-gap-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.completion-section-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-bottom: 10px;
+}
+
+.completion-section-title > span {
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  display: grid;
+  place-items: center;
+  color: #c2410c;
+  background: #ffedd5;
+}
+
+.completion-section-title h4,
+.mastered-section h4,
+.perfect-result h4 {
+  font-size: 11px;
+}
+
+.completion-section-title p,
+.perfect-result p {
+  color: var(--text-muted);
+  font-size: 9px;
+  margin-top: 1px;
+}
+
+.knowledge-gap-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.knowledge-gap-card {
+  padding: 10px;
+  border: 1px solid #fed7aa;
+  border-radius: 10px;
+  background: #fff7ed;
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.gap-number {
+  width: 21px;
+  height: 21px;
+  border-radius: 7px;
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  color: #fff;
+  background: #ea580c;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.knowledge-gap-card h5 {
+  color: #9a3412;
+  font-size: 10px;
+  line-height: 1.4;
+}
+
+.knowledge-gap-card p {
+  color: #475569;
+  font-size: 9px;
+  line-height: 1.55;
+  margin-top: 3px;
+}
+
+.review-gaps-button {
+  width: 100%;
+  min-height: 39px;
+  margin-top: 10px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  color: #fff;
+  background: linear-gradient(135deg, #7c3aed, #4f46e5);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.perfect-result {
+  padding: 12px;
+  border: 1px solid #bbf7d0;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #15803d;
+  background: #f0fdf4;
+}
+
+.mastered-section {
+  padding: 11px;
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: color-mix(in srgb, var(--bg-main) 45%, var(--bg-card));
+}
+
+.mastered-section h4 {
+  margin-bottom: 7px;
+}
+
+.mastered-section > div {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 9px;
+  line-height: 1.45;
+  margin-top: 5px;
+}
+
+.mastered-section svg {
+  color: #16a34a;
+  flex: 0 0 auto;
+  margin-top: 1px;
+}
+
+.completion-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 7px;
+}
+
+.completion-actions button {
+  min-height: 36px;
+  padding: 7px 8px;
+  border-radius: 9px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: var(--brand-blue);
+  background: var(--brand-blue-light);
+  border: 1px solid #bfdbfe;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.completion-actions button.secondary {
+  color: var(--text-secondary);
+  background: var(--bg-card);
+  border-color: var(--border-color);
+}
+
+.completion-actions button:only-child {
+  grid-column: 1 / -1;
+}
+
 [data-theme='dark'] .empty-icon,
 [data-theme='dark'] .citation-chip {
   background: #1e3a8a;
   color: #bfdbfe;
+}
+
+[data-theme='dark'] .citation-preview {
+  background: #172554;
+  border-color: #1e40af;
+}
+
+[data-theme='dark'] .citation-preview-header {
+  border-color: #1e3a8a;
 }
 
 [data-theme='dark'] .empty-icon.study {
@@ -786,6 +1096,25 @@
 [data-theme='dark'] .tutor-message.needs-clarification {
   background: #172554;
   border-color: #1e40af;
+}
+
+[data-theme='dark'] .knowledge-gap-card {
+  background: #431407;
+  border-color: #9a3412;
+}
+
+[data-theme='dark'] .knowledge-gap-card h5 {
+  color: #fdba74;
+}
+
+[data-theme='dark'] .knowledge-gap-card p {
+  color: #cbd5e1;
+}
+
+[data-theme='dark'] .perfect-result {
+  color: #86efac;
+  background: #052e16;
+  border-color: #166534;
 }
 
 [data-theme='dark'] .tutor-error,

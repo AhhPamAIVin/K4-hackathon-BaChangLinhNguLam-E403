@@ -43,6 +43,7 @@ def test_direct_agent_filters_hallucinated_citation() -> None:
     agent = DirectQAAgent(knowledge, FakeOpenAIService())
     response = agent.answer(DirectChatRequest(message="Attention hoạt động thế nào?"))
     assert [citation.id for citation in response.citations] == ["[T06-075]"]
+    assert response.citations[0].excerpt
 
 
 def test_study_knowledge_base_loads_v2_summaries() -> None:
