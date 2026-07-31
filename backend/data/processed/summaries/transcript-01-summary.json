@@ -1,0 +1,391 @@
+{
+  "transcript_id": "01",
+  "title": "Xác định bài toán kinh doanh cho AI",
+  "overview": "Bài giảng tập trung vào cách chuyển một yêu cầu AI mơ hồ thành bài toán cụ thể, đáng giải quyết và có thể triển khai. Nội dung nhấn mạnh việc xác định vấn đề trước khi chọn công nghệ, thấu hiểu người dùng, phân kỳ–hội tụ trong khám phá vấn đề và giải pháp, ưu tiên bằng ma trận tác động–nỗ lực, cũng như kiểm chứng lặp lại bằng tư duy lấy con người làm trung tâm. Bài giảng đồng thời phân biệt product manager, product owner và project manager; giải thích những điểm khác biệt của sản phẩm AI; giới thiệu dogfooding, tư duy first principles và tri thức ẩn của chuyên gia.",
+  "learning_objectives": [
+    "Giải thích vì sao cần xác định đúng vấn đề trước khi lựa chọn AI hoặc giải pháp công nghệ.",
+    "Phân tích và bóc tách một yêu cầu mơ hồ thành mục tiêu, đối tượng, pain point và problem statement cụ thể.",
+    "Phân biệt vai trò và tư duy của project manager, product manager và product owner.",
+    "Mô tả các lớp năng lực cần có khi phát triển sản phẩm AI và phân biệt sản phẩm AI với sản phẩm truyền thống.",
+    "Áp dụng quy trình Double Diamond, Five Whys và ma trận tác động–nỗ lực để khám phá, sàng lọc và ưu tiên vấn đề.",
+    "Áp dụng quy trình Human-Centered Design để quan sát, hình thành ý tưởng, tạo prototype, kiểm thử và quay lại bước phù hợp.",
+    "Giải thích lợi ích và cách áp dụng dogfooding khi xây dựng sản phẩm.",
+    "Áp dụng tư duy first principles để bóc tách vấn đề và tìm kiếm giải pháp không bị giới hạn bởi cách làm cũ."
+  ],
+  "key_concepts": [
+    {
+      "name": "Xác định bài toán từ yêu cầu mơ hồ",
+      "definition": "Là quá trình biến mục tiêu hoặc yêu cầu chung chung thành vấn đề cụ thể có thể triển khai, đồng thời kiểm chứng cách hiểu với các stakeholder.",
+      "why_it_matters": "Giúp tránh nhảy thẳng vào một giải pháp chưa chắc giải quyết đúng nhu cầu thực sự.",
+      "citations": [
+        "[T01-005]",
+        "[T01-006]"
+      ]
+    },
+    {
+      "name": "Problem discovery và solution discovery",
+      "definition": "Problem discovery là khám phá để tìm đúng vấn đề; solution discovery là khám phá để tìm đúng giải pháp cho vấn đề đó.",
+      "why_it_matters": "Hai giai đoạn giúp tách việc xác định vấn đề khỏi việc lựa chọn giải pháp.",
+      "citations": [
+        "[T01-049]"
+      ]
+    },
+    {
+      "name": "Tư duy user-centered",
+      "definition": "Là cách làm sản phẩm lấy người dùng làm trung tâm, luôn đặt câu hỏi sản phẩm được xây cho ai, ai sẽ dùng và họ có thực sự cần hay không.",
+      "why_it_matters": "Giúp sản phẩm gắn với nhu cầu và pain point thực tế của người dùng.",
+      "citations": [
+        "[T01-011]"
+      ]
+    },
+    {
+      "name": "Double Diamond",
+      "definition": "Mô hình gồm hai viên kim cương; mỗi viên có một pha phân kỳ để mở rộng không gian khám phá và một pha hội tụ để thu hẹp, lựa chọn. Viên thứ nhất tìm đúng vấn đề, viên thứ hai tìm đúng giải pháp.",
+      "why_it_matters": "Giúp hạn chế việc bỏ sót vấn đề hoặc giải pháp thay thế do quyết định quá sớm.",
+      "citations": [
+        "[T01-049]",
+        "[T01-069]"
+      ]
+    },
+    {
+      "name": "Ma trận tác động–nỗ lực",
+      "definition": "Công cụ đánh giá mỗi vấn đề theo tác động đạt được nếu giải quyết và nỗ lực cần bỏ ra để giải quyết.",
+      "why_it_matters": "Là cơ sở để ưu tiên các việc có tác động cao và nỗ lực thấp, tạo quick win.",
+      "citations": [
+        "[T01-074]",
+        "[T01-078]",
+        "[T01-079]"
+      ]
+    },
+    {
+      "name": "Dogfooding",
+      "definition": "Chiến lược xây dựng và sử dụng chính sản phẩm của mình; người xây dựng đồng thời là người dùng sản phẩm.",
+      "why_it_matters": "Người xây dựng có thể trực tiếp cảm nhận pain point, phát hiện lỗi và liên tục tối ưu mà không phải chờ người dùng bên ngoài.",
+      "citations": [
+        "[T01-042]",
+        "[T01-043]"
+      ]
+    },
+    {
+      "name": "Tri thức ẩn của chuyên gia",
+      "definition": "Những hiểu biết và kỹ năng được hình thành qua nhiều năm, khiến chuyên gia có thể nhận diện và đưa ra quyết định bằng trực giác mà không cần lý giải đầy đủ từng bước.",
+      "why_it_matters": "Giải thích vì sao việc sao chép quy trình bề mặt của chuyên gia không luôn giúp người mới tạo ra kết quả tương đương.",
+      "citations": [
+        "[T01-047]",
+        "[T01-048]"
+      ]
+    },
+    {
+      "name": "Tư duy first principles",
+      "definition": "Cách bóc tách một vấn đề về những nguyên lý và cấu phần cơ bản nhất, thay vì sao chép cách làm hiện có.",
+      "why_it_matters": "Mở rộng không gian giải pháp và giúp tìm ra cách làm mới phù hợp với bối cảnh hiện tại.",
+      "citations": [
+        "[T01-062]",
+        "[T01-064]"
+      ]
+    },
+    {
+      "name": "Sản phẩm AI",
+      "definition": "Sản phẩm vừa bao gồm các nguyên lý phát triển sản phẩm, vừa có lớp AI; người làm phải hiểu năng lực và giới hạn của AI, mô hình, trải nghiệm người dùng với AI và cách xử lý tính bất định.",
+      "why_it_matters": "AI tạo ra đầu ra có tính xác suất, khiến việc kiểm soát lỗi và kỳ vọng người dùng khác sản phẩm truyền thống.",
+      "citations": [
+        "[T01-018]",
+        "[T01-019]"
+      ]
+    },
+    {
+      "name": "Vòng lặp Human-Centered Design",
+      "definition": "Quy trình gồm đồng cảm và xác định vấn đề, đưa ra ý tưởng, xây dựng prototype, kiểm thử và lặp lại; phản hồi người dùng quyết định quay lại bước nào.",
+      "why_it_matters": "Cho phép học và tối ưu liên tục với chi phí thấp, đồng thời phát hiện sớm việc vấn đề hoặc giải pháp chưa đúng.",
+      "citations": [
+        "[T01-081]",
+        "[T01-083]",
+        "[T01-085]"
+      ]
+    }
+  ],
+  "testable_points": [
+    {
+      "statement": "Công nghệ nên được lựa chọn sau khi đã xác định vấn đề cần giải quyết.",
+      "explanation": "Giảng viên cảnh báo việc nhảy thẳng vào giải pháp, chẳng hạn yêu cầu xây AI support nhưng chưa rõ support cho ai và để làm gì.",
+      "citations": [
+        "[T01-004]"
+      ]
+    },
+    {
+      "statement": "Khi nhận yêu cầu mơ hồ, cần bóc tách thành các phương án cụ thể và xác minh lại với stakeholder.",
+      "explanation": "Người thực hiện có thể diễn giải yêu cầu thành A, B, C rồi hỏi stakeholder cách hiểu nào là đúng.",
+      "citations": [
+        "[T01-006]"
+      ]
+    },
+    {
+      "statement": "Trong làn sóng đưa AI vào doanh nghiệp, thiếu người đặt và ưu tiên bài toán có thể khiến việc tuyển AI engineer không tạo ra hiệu quả.",
+      "explanation": "AI engineer có thể giải bài toán cụ thể được giao, nhưng doanh nghiệp vẫn cần người xác định việc nào nên làm trước và tạo thành quả sớm.",
+      "citations": [
+        "[T01-002]"
+      ]
+    },
+    {
+      "statement": "Theo nội dung bài giảng, 70% việc đưa AI vào ứng dụng trong doanh nghiệp đến từ con người và vận hành, không phải công nghệ.",
+      "explanation": "Con số được dùng để nhấn mạnh rằng triển khai AI không chỉ là vấn đề công nghệ.",
+      "citations": [
+        "[T01-003]"
+      ]
+    },
+    {
+      "statement": "Project manager chủ yếu bảo đảm dự án hoàn thành đúng tiến độ và trong ngân sách bằng cách quản lý nguồn lực, công việc, con người và rủi ro.",
+      "explanation": "Vai trò này thường gặp ở công ty outsourcing, nơi bài toán và spec từ khách hàng đã tương đối rõ.",
+      "citations": [
+        "[T01-010]"
+      ]
+    },
+    {
+      "statement": "Product manager có phạm vi rộng hơn, chủ động tìm bài toán, giải pháp đáng làm và cơ hội thị trường.",
+      "explanation": "Product manager đi trước trong việc nhìn ra cơ hội và khoanh vùng vấn đề.",
+      "citations": [
+        "[T01-011]"
+      ]
+    },
+    {
+      "statement": "Product owner đi sâu vào user, pain point, tính năng và kế hoạch phát triển khi bài toán và đối tượng người dùng đã tương đối rõ.",
+      "explanation": "Product owner thường làm việc ở phạm vi cụ thể hơn product manager.",
+      "citations": [
+        "[T01-011]"
+      ]
+    },
+    {
+      "statement": "Sản phẩm AI tạo đầu ra có tính xác suất nên không phải 100 lần chạy sẽ cho 100 kết quả giống nhau.",
+      "explanation": "Vì vậy sản phẩm AI cần xử lý lỗi khác sản phẩm truyền thống và phải kiểm soát kỳ vọng người dùng.",
+      "citations": [
+        "[T01-019]"
+      ]
+    },
+    {
+      "statement": "Chi phí chuyển đổi giữa các sản phẩm AI thấp khiến người dùng có thể rời đi nhanh nếu sản phẩm không đủ khác biệt.",
+      "explanation": "Dữ liệu dễ chuyển hơn, người dùng ít phải học lại và có nhiều lựa chọn thay thế.",
+      "citations": [
+        "[T01-021]",
+        "[T01-024]"
+      ]
+    },
+    {
+      "statement": "Yêu cầu “xây dựng AI chatbot support” chưa phải là problem statement cụ thể.",
+      "explanation": "Cần hỏi support để làm gì và tìm pain point phía sau; nguyên nhân thực tế có thể là đội sales quá tải và giải pháp phù hợp chưa chắc là chatbot.",
+      "citations": [
+        "[T01-030]"
+      ]
+    },
+    {
+      "statement": "Five Whys có thể được dùng để đào sâu từ yêu cầu hoặc vấn đề bề mặt đến nguyên nhân thực sự.",
+      "explanation": "Kỹ thuật này hỗ trợ hỏi “why” nhiều lần để tìm point và vấn đề phía sau.",
+      "citations": [
+        "[T01-030]",
+        "[T01-074]"
+      ]
+    },
+    {
+      "statement": "Không nên chọn AI chỉ vì đề bài có nhắc đến AI.",
+      "explanation": "Một số vấn đề có thể giải bằng con người, công cụ bên ngoài hoặc một automation nhỏ; cần cân nhắc mức độ đau, nguồn lực và các lời giải thay thế.",
+      "citations": [
+        "[T01-032]",
+        "[T01-033]"
+      ]
+    },
+    {
+      "statement": "Khi ưu tiên vấn đề, cần xem xét cả tác động và nỗ lực.",
+      "explanation": "Tác động có thể là thời gian tiết kiệm, doanh thu hoặc lợi ích; nỗ lực gồm số người, thời gian và nguồn lực cần thiết.",
+      "citations": [
+        "[T01-078]"
+      ]
+    },
+    {
+      "statement": "Trong ma trận tác động–nỗ lực, vấn đề có tác động cao và nỗ lực thấp thường là ưu tiên và tạo quick win.",
+      "explanation": "Ngược lại, vấn đề có nỗ lực cao nhưng tác động thấp thường nên loại khỏi ưu tiên trước mắt.",
+      "citations": [
+        "[T01-079]"
+      ]
+    },
+    {
+      "statement": "Quan sát người dùng có thể phát hiện insight mà phỏng vấn hoặc khảo sát không thu được.",
+      "explanation": "Người dùng có thể không nói ra, hoặc thậm chí không biết, điều họ thực sự cần; vì vậy nên quan sát họ trong môi trường thực tế.",
+      "citations": [
+        "[T01-040]",
+        "[T01-073]"
+      ]
+    },
+    {
+      "statement": "Trong Double Diamond, phân kỳ nhằm tạo nhiều ứng cử viên, còn hội tụ nhằm nhóm, lọc, ưu tiên và lựa chọn.",
+      "explanation": "Nhiều ứng cử viên làm tăng khả năng tìm được vấn đề hoặc giải pháp phù hợp.",
+      "citations": [
+        "[T01-069]"
+      ]
+    },
+    {
+      "statement": "Nếu kiểm thử cho thấy người dùng không cần sản phẩm, cần quay lại xác định vấn đề; nếu họ cần nhưng thấy khó dùng, có thể quay lại bước ý tưởng hoặc prototype.",
+      "explanation": "Phản hồi người dùng quyết định bước cần quay lại trong vòng lặp HCD.",
+      "citations": [
+        "[T01-083]"
+      ]
+    },
+    {
+      "statement": "Prototype không nhất thiết phải là sản phẩm production; mục tiêu là kiểm chứng giả thuyết với chi phí và thời gian thấp nhất có thể.",
+      "explanation": "Nếu scope đủ nhỏ và AI giúp xây dựng nhanh, có thể dùng sản phẩm thực để validate; nếu không, vẫn nên dùng prototype.",
+      "citations": [
+        "[T01-085]"
+      ]
+    },
+    {
+      "statement": "Dogfooding giúp người xây dựng trở thành tester đầu tiên và tối ưu sản phẩm liên tục.",
+      "explanation": "Ví dụ trong bài gồm Jira dùng để quản lý việc xây Jira, Slack bắt đầu từ chat nội bộ và Anthropic dùng Claude Code để xây Claude Code.",
+      "citations": [
+        "[T01-042]"
+      ]
+    },
+    {
+      "statement": "Bài tập xác định trợ lý AI cá nhân nên bắt đầu bằng việc liệt kê các tác vụ lặp lại và tốn thời gian, sau đó đánh giá theo tác động–nỗ lực.",
+      "explanation": "Người học được yêu cầu quan sát chính mình, mở rộng danh sách pain point rồi chọn vấn đề có tác động cao và nỗ lực thấp.",
+      "citations": [
+        "[T01-087]",
+        "[T01-088]"
+      ]
+    }
+  ],
+  "examples": [],
+  "comparisons": [
+    {
+      "concept_a": "Project manager",
+      "concept_b": "Product manager",
+      "difference": "Project manager tập trung bảo đảm một dự án đã có bài toán và spec tương đối rõ hoàn thành đúng tiến độ, ngân sách và nguồn lực; product manager chủ động tìm bài toán, giải pháp đáng làm và cơ hội thị trường.",
+      "citations": [
+        "[T01-010]",
+        "[T01-011]"
+      ]
+    },
+    {
+      "concept_a": "Product manager",
+      "concept_b": "Product owner",
+      "difference": "Product manager có phạm vi rộng hơn, nhìn ra cơ hội và khoanh vùng bài toán; product owner đi sâu vào user, pain point, tính năng và kế hoạch khi bài toán, user đã rõ hơn.",
+      "citations": [
+        "[T01-011]"
+      ]
+    },
+    {
+      "concept_a": "Sản phẩm AI",
+      "concept_b": "Sản phẩm truyền thống",
+      "difference": "Sản phẩm AI có đầu ra xác suất, cách xử lý lỗi và kiểm soát kỳ vọng người dùng khác; sản phẩm truyền thống thường cho kết quả ổn định hơn khi cùng đầu vào và không bị thay đổi theo cách tương tự.",
+      "citations": [
+        "[T01-019]"
+      ]
+    },
+    {
+      "concept_a": "Phân kỳ",
+      "concept_b": "Hội tụ",
+      "difference": "Phân kỳ mở rộng không gian khám phá để tạo nhiều ứng cử viên; hội tụ thu hẹp bằng cách nhóm, lọc, đánh giá và ưu tiên các ứng cử viên.",
+      "citations": [
+        "[T01-069]",
+        "[T01-077]"
+      ]
+    },
+    {
+      "concept_a": "Quan sát",
+      "concept_b": "Nhật ký hành vi",
+      "difference": "Quan sát là một quá trình hoặc hành động tìm hiểu người dùng; nhật ký hành vi là kết quả đầu ra mô tả các hành vi của người dùng.",
+      "citations": [
+        "[T01-075]",
+        "[T01-076]"
+      ]
+    },
+    {
+      "concept_a": "Đồng cảm",
+      "concept_b": "Kiểm thử",
+      "difference": "Đồng cảm nhằm hiểu người dùng thông qua khảo sát, phỏng vấn và quan sát để xác định vấn đề; kiểm thử là đưa sản phẩm hoặc ý tưởng cho người dùng để nhận phản hồi.",
+      "citations": [
+        "[T01-084]"
+      ]
+    },
+    {
+      "concept_a": "Làm đúng cái sai",
+      "concept_b": "Làm sai cái đúng",
+      "difference": "Theo quan điểm của giảng viên, làm đúng cái sai nguy hiểm hơn vì có thể làm tốn nhiều chi phí, tạo ảo tưởng thành công và khiến nhóm khó quay lại kiểm chứng vấn đề; làm sai cái đúng vẫn tạo cơ hội học hỏi trong không gian giải pháp của một vấn đề đúng.",
+      "citations": [
+        "[T01-058]",
+        "[T01-059]",
+        "[T01-060]",
+        "[T01-061]"
+      ]
+    }
+  ],
+  "misconceptions": [
+    {
+      "incorrect_belief": "Có yêu cầu xây AI chatbot thì nhiệm vụ đương nhiên là xây chatbot.",
+      "correction": "Cần phản biện yêu cầu, tìm mục tiêu và pain point thực sự; chatbot chỉ là một giải pháp bề mặt và có thể không phải giải pháp phù hợp.",
+      "citations": [
+        "[T01-030]",
+        "[T01-032]"
+      ]
+    },
+    {
+      "incorrect_belief": "Mọi vấn đề trong doanh nghiệp đều nên ưu tiên giải bằng AI.",
+      "correction": "Cần xem vấn đề có đủ đau, đáng làm và phù hợp với nguồn lực hay không; một số việc có thể giải nhanh bằng con người, công cụ bên ngoài hoặc automation nhỏ.",
+      "citations": [
+        "[T01-032]",
+        "[T01-033]"
+      ]
+    },
+    {
+      "incorrect_belief": "Product manager và project manager chỉ khác nhau ở tên gọi.",
+      "correction": "Project manager quản lý việc hoàn thành một dự án đã tương đối rõ; product manager chủ động tìm bài toán, giải pháp đáng làm và cơ hội thị trường.",
+      "citations": [
+        "[T01-008]",
+        "[T01-010]",
+        "[T01-011]"
+      ]
+    },
+    {
+      "incorrect_belief": "Chỉ cần làm đúng yêu cầu đã chốt, không cần đặt câu hỏi về vấn đề.",
+      "correction": "Người làm sản phẩm cần duy trì tư duy phản biện, xác minh vấn đề và tránh chỉ làm đúng một requirement có thể sai từ đầu.",
+      "citations": [
+        "[T01-012]",
+        "[T01-045]"
+      ]
+    },
+    {
+      "incorrect_belief": "Một prototype phải được xây hoàn chỉnh như production mới có thể kiểm chứng.",
+      "correction": "Prototype có thể được dùng để kiểm chứng với chi phí thấp; nếu scope đủ nhỏ, AI có thể cho phép xây luôn sản phẩm nhỏ để validate.",
+      "citations": [
+        "[T01-085]"
+      ]
+    },
+    {
+      "incorrect_belief": "Phỏng vấn hoặc khảo sát luôn cho biết đầy đủ nhu cầu thật của người dùng.",
+      "correction": "Người dùng có thể không nói ra hoặc không nhận biết insight của mình; quan sát hành vi thực tế có thể bổ sung những thông tin này.",
+      "citations": [
+        "[T01-040]",
+        "[T01-073]"
+      ]
+    },
+    {
+      "incorrect_belief": "Khi đã đầu tư nhiều vào một vấn đề thì nên tiếp tục vì không thể quay lại.",
+      "correction": "Cần nhận diện sunk cost và định kỳ kiểm chứng xem vấn đề còn đúng trong bối cảnh hiện tại hay không.",
+      "citations": [
+        "[T01-060]",
+        "[T01-061]"
+      ]
+    },
+    {
+      "incorrect_belief": "Kinh nghiệm của chuyên gia luôn phù hợp để áp dụng nguyên xi trong bối cảnh mới.",
+      "correction": "Kinh nghiệm chỉ mang tính tham khảo; cần xây mental model riêng và kiểm tra liệu cách làm cũ còn phù hợp với bối cảnh hiện tại hay không.",
+      "citations": [
+        "[T01-063]",
+        "[T01-068]"
+      ]
+    }
+  ],
+  "metadata": {
+    "schema_version": 2,
+    "day": "day-2",
+    "source_transcript": "transcript-01-clean.md",
+    "model": "gpt-5.6-luna"
+  }
+}

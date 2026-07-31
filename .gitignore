@@ -1,3 +1,8 @@
 .DS_Store
 node_modules/
+.venv/
+__pycache__/
+*.py[cod]
 *.env
+__pycache__/
+backend/data/processed/embeddings/vectors.jsonl
